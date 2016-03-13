@@ -1,0 +1,3 @@
+[submodule "win_detector/cpr"]
+	path = win_detector/cpr
+	url = git@github.com:whoshuu/cpr.git
