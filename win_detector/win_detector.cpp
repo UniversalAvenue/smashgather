@@ -31,21 +31,32 @@ bool PostWinnerData(string name) {
   }
 }
 
+enum WinDetectorState { INIT, GAME, WIN_DETECTED, WINNER_IDENTIFIED, GAME_SAVED };
+
 int poll() {
+  WinDetectorState state = WinDetectorState::INIT;
   cout << "WinDetector: start polling!" << endl;
   while (true) {
+    // Run detection on current screen
     auto screen = CaptureScreenshot();
     bool is_win = false, is_winner_detected = false;
     CharacterDetails winner("n/a", "");
     is_win = DetectWin(screen, is_winner_detected, winner);
-    if (is_win) {
+
+    // Run state machine
+    // TODO: need game screen detection to avoid spurious win detections
+    if (is_win && state != WinDetectorState::WINNER_IDENTIFIED) {
+      state = WinDetectorState::WIN_DETECTED;
       cout << "DETECTED WIN! ";
       if (is_winner_detected) {
+        state = WinDetectorState::WINNER_IDENTIFIED;
         cout << winner.name << "!" << endl;
         PostWinnerData(winner.name);
       } else {
         cout << "Could not detect winner." << endl;
       }
+    } else {
+      state = WinDetectorState::GAME;
     }
     sleep(1);
   }
