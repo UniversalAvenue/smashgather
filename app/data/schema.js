@@ -1,12 +1,3 @@
-/**
- *  Copyright (c) 2015, Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the BSD-style license found in the
- *  LICENSE file in the root directory of this source tree. An additional grant
- *  of patent rights can be found in the PATENTS file in the same directory.
- */
-
 import {
   GraphQLBoolean,
   GraphQLFloat,
@@ -17,7 +8,7 @@ import {
   GraphQLObjectType,
   GraphQLSchema,
   GraphQLString,
-} from 'graphql';
+} from "graphql";
 
 import {
   connectionArgs,
@@ -27,115 +18,157 @@ import {
   globalIdField,
   mutationWithClientMutationId,
   nodeDefinitions,
-} from 'graphql-relay';
+} from "graphql-relay";
 
 import {
-  // Import methods that your schema can use to interact with your database
-  User,
-  Widget,
+  getCharacter,
   getUser,
-  getViewer,
-  getWidget,
-  getWidgets,
-} from './database';
+  getGame,
+  getCharacters,
+  getUsers,
+  getGames,
+  Character,
+  User,
+  Game,
+} from "./database";
 
-/**
- * We get the node interface and field from the Relay library.
- *
- * The first method defines the way we resolve an ID to its object.
- * The second defines the way we resolve an object to its GraphQL type.
- */
 var {nodeInterface, nodeField} = nodeDefinitions(
   (globalId) => {
     var {type, id} = fromGlobalId(globalId);
-    if (type === 'User') {
+    if (type === "Character") {
+      return getCharacter(id);
+    } else if (type === "User") {
       return getUser(id);
-    } else if (type === 'Widget') {
-      return getWidget(id);
+    } else if (type === "Game") {
+      return getGame(id);
     } else {
       return null;
     }
   },
   (obj) => {
-    if (obj instanceof User) {
+    if (obj instanceof Character) {
       return userType;
-    } else if (obj instanceof Widget)  {
-      return widgetType;
+    } else if (obj instanceof User)  {
+      return userType;
+    } else if (obj instanceof Game)  {
+      return gameType;
     } else {
       return null;
     }
   }
 );
 
-/**
- * Define your own types here
- */
-
-var userType = new GraphQLObjectType({
-  name: 'User',
-  description: 'A person who uses our app',
+var characterType = new GraphQLObjectType({
+  name: "Character",
+  description: "A Smash character",
   fields: () => ({
-    id: globalIdField('User'),
-    widgets: {
-      type: widgetConnection,
-      description: 'A person\'s collection of widgets',
-      args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getWidgets(), args),
-    },
-  }),
-  interfaces: [nodeInterface],
-});
-
-var widgetType = new GraphQLObjectType({
-  name: 'Widget',
-  description: 'A shiny widget',
-  fields: () => ({
-    id: globalIdField('Widget'),
+    id: globalIdField("Character"),
     name: {
       type: GraphQLString,
-      description: 'The name of the widget',
+      description: "The name of the character",
     },
   }),
   interfaces: [nodeInterface],
 });
 
-/**
- * Define your own connection types here
- */
-var {connectionType: widgetConnection} =
-  connectionDefinitions({name: 'Widget', nodeType: widgetType});
+var userType = new GraphQLObjectType({
+  name: "User",
+  description: "A Smash user",
+  fields: () => ({
+    id: globalIdField("User"),
+    name: {
+      type: GraphQLString,
+      description: "The name of the user",
+    },
+    username: {
+      type: GraphQLString,
+      description: "The Slack username of the user",
+    },
+    character: {
+      type: characterType,
+      description: "The main character played by the user",
+    },
+  }),
+  interfaces: [nodeInterface],
+});
 
-/**
- * This is the type that will be the root of our query,
- * and the entry point into our schema.
- */
+var gameType = new GraphQLObjectType({
+  name: "Game",
+  description: "Results of a Smash game",
+  fields: () => ({
+    id: globalIdField("Game"),
+    createdAt: {
+      type: GraphQLString,
+      description: "Timestamp (with timezone) the game was recorded",
+    },
+    user: {
+      type: userType,
+      description: "The winning user of this game",
+    },
+    character: {
+      type: characterType,
+      description: "The winning character of this game",
+    },
+    verified: {
+      type: GraphQLBoolean,
+      description: "Whether or not the winning user has been verified",
+    }
+  }),
+  interfaces: [nodeInterface],
+});
+
+var viewerType = new GraphQLObjectType({
+  name: "Viewer",
+  description: "Base type for Smashboard queries",
+  fields: () => ({
+    characters: {
+      type: CharacterConnection,
+      description: "Available Smash characters",
+      args: connectionArgs,
+      resolve: (_, args) => connectionFromArray(getCharacters(), args),
+    },
+    users: {
+      type: UserConnection,
+      description: "Available Smash users",
+      args: connectionArgs,
+      resolve: (_, args) => connectionFromArray(getUsers(), args),
+    },
+    games: {
+      type: GameConnection,
+      description: "Available Smash games",
+      args: connectionArgs,
+      resolve: (_, args) => connectionFromArray(getGames(), args),
+    },
+  }),
+});
+
+var {connectionType: CharacterConnection} =
+  connectionDefinitions({name: "Character", nodeType: characterType});
+
+var {connectionType: UserConnection} =
+  connectionDefinitions({name: "User", nodeType: userType});
+
+var {connectionType: GameConnection} =
+  connectionDefinitions({name: "Game", nodeType: gameType});
+
 var queryType = new GraphQLObjectType({
-  name: 'Query',
+  name: "Query",
   fields: () => ({
     node: nodeField,
     // Add your own root fields here
     viewer: {
-      type: userType,
-      resolve: () => getViewer(),
+      type: viewerType,
+      resolve: () => { return {} },
     },
   }),
 });
 
-/**
- * This is the type that will be the root of our mutations,
- * and the entry point into performing writes in our schema.
- */
 var mutationType = new GraphQLObjectType({
-  name: 'Mutation',
+  name: "Mutation",
   fields: () => ({
-    // Add your own mutations here
   })
 });
 
-/**
- * Finally, we construct our schema (whose starting query type is the query
- * type we defined above) and export it.
- */
 export var Schema = new GraphQLSchema({
   query: queryType,
   // Uncomment the following after adding some mutation fields:
