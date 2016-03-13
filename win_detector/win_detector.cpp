@@ -2,6 +2,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <cpr/cpr.h>
+#include <iostream>
+#include <sstream>
 
 #include "src/CaptureScreenshot.h"
 #include "src/WinDetector.h"
@@ -9,14 +11,23 @@
 using namespace std;
 using namespace cv;
 
-static const string SERVER_URL = "http://localhost:5000/game";
+static const string SERVER_URL = "http://localhost:8080/graphql";
 
-bool PostWinnerData(string name) {
+int client_mutation_id = 0;
+
+bool RunCreateGameMutation(string name) {
   string url = SERVER_URL;
-  cout << "Start POST " << url << " { \"winner\": \"" << name << "\" }" << endl;
+  ostringstream oss;
+  oss << "mutation create_game { createGame(input: { "
+    << "characterName: \"" << name << "\", "
+    << "clientMutationId: \"" << client_mutation_id << "\""
+    << "}) { game { createdAt, user { name }, character { name } } } }";
+  string graphql_query = oss.str();
+  ++client_mutation_id;
+  cout << "Start POST " << url << ": " + graphql_query << endl;
   auto request = cpr::Post(
       cpr::Url{url},
-      cpr::Payload{{"winner", name}}
+      cpr::Payload{{"query", graphql_query}}
   );
   if (request.status_code == 200) {
     cout << "Finished POST " << url << endl;
@@ -51,7 +62,7 @@ int poll() {
       if (is_winner_detected) {
         state = WinDetectorState::WINNER_IDENTIFIED;
         cout << winner.name << "!" << endl;
-        PostWinnerData(winner.name);
+        RunCreateGameMutation(winner.name);
       } else {
         cout << "Could not detect winner." << endl;
       }
