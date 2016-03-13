@@ -8,29 +8,29 @@
 using namespace std;
 using namespace cv;
 
+#include <iostream>
+
 bool ContainsTemplate(Mat& input, Mat& templ, double threshold) {
-  // Convert to grayscale for performance
-  Mat gray_input, gray_templ;
-  cvtColor(input, gray_input, COLOR_BGR2GRAY);
-  cvtColor(templ, gray_templ, COLOR_BGR2GRAY);
+  assert(input.type() == CV_8UC1);
+  assert(templ.type() == CV_8UC1);
 
   // Create the result matrix
-  int result_cols = gray_input.cols - gray_templ.cols + 1;
-  int result_rows = gray_input.rows - gray_templ.rows + 1;
+  int result_cols = input.cols - templ.cols + 1;
+  int result_rows = input.rows - templ.rows + 1;
   Mat result(result_cols, result_rows, CV_32FC1);
 
   // Match the template against the input image, and normalize resulting matrix
-  matchTemplate(gray_input, gray_templ, result, CV_TM_CCOEFF);
+  matchTemplate(input, templ, result, CV_TM_CCOEFF);
   normalize(result, result, 0, 1, NORM_MINMAX, -1, Mat());
 
   // Find the best match within the input image and crop that matching area
   Point maxLoc;
   minMaxLoc(result, NULL, NULL, NULL, &maxLoc);
-  Rect bounds(maxLoc.x, maxLoc.y, gray_templ.cols, gray_templ.rows);
-  Mat cropped = gray_input(bounds);
+  Rect bounds(maxLoc.x, maxLoc.y, templ.cols, templ.rows);
+  Mat cropped = input(bounds);
 
   // Determine the similarity between the cropped match and the template
-  double similarity = GetMSSIM(cropped, gray_templ)[0];
+  double similarity = GetMSSIM(cropped, templ)[0];
 
   return similarity > threshold;
 }

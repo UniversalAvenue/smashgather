@@ -12,13 +12,15 @@ using namespace std;
 using namespace cv;
 
 bool IsWinScreen(Mat& screen) {
-  Mat templ = imread("img/templates/wins_template.jpg");
+  Mat templ;
+  cvtColor(imread("img/templates/wins_template.jpg"), templ, COLOR_BGR2GRAY);
   return ContainsTemplate(screen, templ);
 }
 
 bool ExtractWinner(Mat& screen, CharacterDetails& winner) {
   for (CharacterDetails character: CHARACTERS) {
-    Mat templ = imread(character.template_filename);
+    Mat templ;
+    cvtColor(imread(character.template_filename), templ, COLOR_BGR2GRAY);
     if (ContainsTemplate(screen, templ)) {
       winner = character;
       return true;
