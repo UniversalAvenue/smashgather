@@ -41,6 +41,12 @@ function getGames() {
   return [getGame()];
 }
 
+function createGame({ characterName }) {
+  console.log(`createGame, characterName: ${characterName}`)
+  // NOTE: when this is implemented, don't forget to create a sequential game ID
+  return getGame()
+}
+
 module.exports = {
   getCharacter,
   getUser,
@@ -48,6 +54,7 @@ module.exports = {
   getCharacters,
   getUsers,
   getGames,
+  createGame,
   Character,
   User,
   Game,

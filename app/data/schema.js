@@ -27,6 +27,7 @@ import {
   getCharacters,
   getUsers,
   getGames,
+  createGame,
   Character,
   User,
   Game,
@@ -163,14 +164,39 @@ var queryType = new GraphQLObjectType({
   }),
 });
 
+var CreateGameMutation = mutationWithClientMutationId({
+  name: "CreateGame",
+  inputFields: {
+    characterName: {
+      type: new GraphQLNonNull(GraphQLString)
+    },
+  },
+  outputFields: {
+    game: {
+      type: gameType,
+      resolve: (payload) => getGame(payload.gameId)
+    },
+    viewer: {
+      type: viewerType,
+      resolve: () => { return {} }
+    }
+  },
+  mutateAndGetPayload: ({ createdAt, characterName }) => {
+    var newGame = createGame({ characterName })
+    return {
+      gameId: newGame.id,
+    };
+  }
+});
+
 var mutationType = new GraphQLObjectType({
   name: "Mutation",
   fields: () => ({
+    createGame: CreateGameMutation
   })
 });
 
 export var Schema = new GraphQLSchema({
   query: queryType,
-  // Uncomment the following after adding some mutation fields:
-  // mutation: mutationType
+  mutation: mutationType
 });
