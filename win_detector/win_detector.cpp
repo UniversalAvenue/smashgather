@@ -1,12 +1,35 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include <cpr/cpr.h>
 
 #include "src/CaptureScreenshot.h"
 #include "src/WinDetector.h"
 
 using namespace std;
 using namespace cv;
+
+static const string SERVER_URL = "http://localhost:5000/game";
+
+bool PostWinnerData(string name) {
+  string url = SERVER_URL;
+  cout << "Start POST " << url << " { \"winner\": \"" << name << "\" }" << endl;
+  auto request = cpr::Post(
+      cpr::Url{url},
+      cpr::Payload{{"winner", name}}
+  );
+  if (request.status_code == 200) {
+    cout << "Finished POST " << url << endl;
+    cout << "Response (code: " << request.status_code << "):" << endl;
+    cout << "  " << request.text << endl;
+    return true;
+  } else {
+    cout << "Failed POST " << url << " (code: " << request.status_code << ")" << endl;
+    cout << "Response (code: " << request.status_code << "):" << endl;
+    cout << "  " << request.text << endl;
+    return false;
+  }
+}
 
 int poll() {
   cout << "WinDetector: start polling!" << endl;
@@ -19,6 +42,7 @@ int poll() {
       cout << "DETECTED WIN! ";
       if (is_winner_detected) {
         cout << winner.name << "!" << endl;
+        PostWinnerData(winner.name);
       } else {
         cout << "Could not detect winner." << endl;
       }

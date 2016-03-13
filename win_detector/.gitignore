@@ -5,3 +5,5 @@ cmake_install.cmake
 libWinDetector.a
 win_detector
 win_detector_tests
+bin/
+lib/
