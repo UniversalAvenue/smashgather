@@ -12,7 +12,7 @@ using namespace std;
 using namespace cv;
 
 bool IsWinScreen(Mat& screen) {
-  Mat templ = imread("img/wins_template.jpg");
+  Mat templ = imread("img/templates/wins_template.jpg");
   return ContainsTemplate(screen, templ);
 }
 

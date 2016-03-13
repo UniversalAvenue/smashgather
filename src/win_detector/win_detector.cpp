@@ -2,21 +2,18 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-#include "WinDetector.h"
+#include "src/WinDetector.h"
 
 using namespace std;
 using namespace cv;
 
 // For command line use
-int main1(int argc, char* argv[])
-{
-  cout << endl << argv[0] << endl << endl;
-  cout << "Analyzes an image to determine if it is a SSB64 win screen, and if so, which character is the winner." << endl;
-
+int main(int argc, char* argv[]) {
   Mat input;
   if (argc > 1) {
     input = imread(argv[1]);
   } else {
+    cout << "Analyzes an image to determine if it is a SSB64 win screen, and if so, which character is the winner." << endl;
     cout << "    Usage: " << argv[0] << " <input_image>" << endl;
     return 0;
   }
@@ -33,7 +30,7 @@ int main1(int argc, char* argv[])
     cout << "Detected win, but could not identify winner!" << endl;
     return 0;
   } else {
-    cout << "Did not detect a winner!" << endl;
+    cout << "Did not detect a win!" << endl;
     return 1;
   }
 }

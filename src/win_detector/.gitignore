@@ -2,4 +2,6 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-WinDetector
+libWinDetector.a
+win_detector
+win_detector_tests

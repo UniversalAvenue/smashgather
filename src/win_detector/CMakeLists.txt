@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 project( WinDetector )
 find_package( OpenCV REQUIRED )
-file(GLOB WinDetector_SRC
-  "*.h"
-  "*.cpp"
-)
-add_executable( WinDetector ${WinDetector_SRC} )
+file( GLOB LIB_SOURCES src/*.cpp )
+file( GLOB LIB_HEADERS src/*.h )
+add_library( WinDetector ${LIB_SOURCES} ${LIB_HEADERS} )
 target_link_libraries( WinDetector ${OpenCV_LIBS} )
+add_executable( win_detector win_detector.cpp )
+target_link_libraries( win_detector ${OpenCV_LIBS} WinDetector )
+add_executable( win_detector_tests win_detector_tests.cpp )
+target_link_libraries( win_detector_tests ${OpenCV_LIBS} WinDetector )
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
