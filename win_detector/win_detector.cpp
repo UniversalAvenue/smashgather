@@ -42,11 +42,20 @@ bool RunCreateGameMutation(string name) {
   }
 }
 
-enum WinDetectorState { INIT, GAME, WIN_DETECTED, WINNER_IDENTIFIED, GAME_SAVED };
+enum WinDetectorState { INIT, GAME, WIN_DETECTED, GAME_SAVED };
 
-int poll() {
+int loop() {
   WinDetectorState state = WinDetectorState::INIT;
-  cout << "WinDetector: start polling!" << endl;
+  string banner =
+  "==========================================================================\n"
+  "   _____ __  __           _____ _    _ ____   ____          _____  _____  \n"
+  "  / ____|  \\/  |   /\\    / ____| |  | |  _ \\ / __ \\   /\\   |  __ \\|  __ \\ \n"
+  " | (___ | \\  / |  /  \\  | (___ | |__| | |_) | |  | | /  \\  | |__) | |  | |\n"
+  "  \\___ \\| |\\/| | / /\\ \\  \\___ \\|  __  |  _ <| |  | |/ /\\ \\ |  _  /| |  | |\n"
+  "  ____) | |  | |/ ____ \\ ____) | |  | | |_) | |__| / ____ \\| | \\ \\| |__| |\n"
+  " |_____/|_|  |_/_/    \\_\\_____/|_|  |_|____/ \\____/_/    \\_\\_|  \\_\\_____/ \n"
+  "==========================================================================\n";
+  cout << banner << "Running win detector (use CTRL+C to exit)..." << endl;
   while (true) {
     // Run detection on current screen
     auto screen = CaptureScreenshot();
@@ -55,20 +64,51 @@ int poll() {
     is_win = DetectWin(screen, is_winner_detected, winner);
 
     // Run state machine
-    // TODO: need game screen detection to avoid spurious win detections
-    if (is_win && state != WinDetectorState::WINNER_IDENTIFIED) {
-      state = WinDetectorState::WIN_DETECTED;
-      cout << "DETECTED WIN! ";
-      if (is_winner_detected) {
-        state = WinDetectorState::WINNER_IDENTIFIED;
-        cout << winner.name << "!" << endl;
-        RunCreateGameMutation(winner.name);
-      } else {
-        cout << "Could not detect winner." << endl;
-      }
-    } else {
-      state = WinDetectorState::GAME;
+    switch (state) {
+      case WinDetectorState::INIT:
+        // TODO: need game screen detection to avoid spurious win detections
+        // immediately fallthrough to GAME state
+        cout << "STATE: GAME" << endl;
+        state = WinDetectorState::GAME;
+      case WinDetectorState::GAME:
+        // wait in this state until we detect a win screen -> WIN_DETECTED
+        if (is_win) {
+          cout << "STATE: WIN_DETECTED" << endl;
+          state = WinDetectorState::WIN_DETECTED;
+          // intentional fallthrough to next state
+        } else {
+          break;
+        }
+      case WinDetectorState::WIN_DETECTED:
+        // wait in this state until we either:
+        // 1) detect a winner -> save game, then go to GAME_SAVED
+        // 2) no longer detect win screen -> log error, go to GAME
+        if (is_win) {
+          if (is_winner_detected) {
+            cout << "Detected winner: " << winner.name << "!" << endl;
+            RunCreateGameMutation(winner.name);
+            cout << "STATE: GAME_SAVED" << endl;
+            state = WinDetectorState::GAME_SAVED;
+          } else {
+            break;
+          }
+        } else {
+          // TODO: record unknown winner?
+          cout << "Detected win, but couldn't detect winner!";
+          state = WinDetectorState::GAME;
+          break;
+        }
+        break;
+      case WinDetectorState::GAME_SAVED:
+        // wait in this state until we stop detecting a win screen -> GAME
+        if (!is_win) {
+          cout << "STATE: GAME" << endl;
+          state = WinDetectorState::GAME;
+        }
+        break;
     }
+
+    // Sleep before looping again
     sleep(1);
   }
   return 0;
@@ -76,7 +116,7 @@ int poll() {
 
 int main(int argc, char* argv[]) {
   if (argc == 1) {
-    return poll();
+    return loop();
   } else if (argc == 3 && strcmp(argv[1], "-i") == 0) {
     Mat input;
     cvtColor(imread(argv[2]), input, COLOR_BGR2GRAY);
@@ -96,9 +136,9 @@ int main(int argc, char* argv[]) {
       return 1;
     }
   } else {
-    // TODO: update usage to include polling mode
-    cout << "Analyzes an image to determine if it is a SSB64 win screen, and if so, which character is the winner." << endl;
-    cout << "    Usage: " << argv[0] << " <input_image>" << endl;
+    cout << "Continually monitors the screen output to detect SSB64 win screens, and records winner to the Smashboard server." << endl;
+    cout << "Or, when given an input image, analyzes it to detect a SSB64 win screen, and outputs winner if detected." << endl;
+    cout << "    Usage: " << argv[0] << " [-i <input_image>]" << endl;
     return 0;
   }
 }
