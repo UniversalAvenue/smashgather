@@ -14,6 +14,7 @@ import {
   connectionArgs,
   connectionDefinitions,
   connectionFromArray,
+  connectionFromPromisedArray,
   fromGlobalId,
   globalIdField,
   mutationWithClientMutationId,
@@ -48,7 +49,7 @@ var {nodeInterface, nodeField} = nodeDefinitions(
   },
   (obj) => {
     if (obj instanceof Character) {
-      return userType;
+      return characterType;
     } else if (obj instanceof User)  {
       return userType;
     } else if (obj instanceof Game)  {
@@ -126,19 +127,19 @@ var viewerType = new GraphQLObjectType({
       type: CharacterConnection,
       description: "Available Smash characters",
       args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getCharacters(), args),
+      resolve: (_, args) => connectionFromPromisedArray(getCharacters(), args),
     },
     users: {
       type: UserConnection,
       description: "Available Smash users",
       args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getUsers(), args),
+      resolve: (_, args) => connectionFromPromisedArray(getUsers(), args),
     },
     games: {
       type: GameConnection,
       description: "Available Smash games",
       args: connectionArgs,
-      resolve: (_, args) => connectionFromArray(getGames(), args),
+      resolve: (_, args) => connectionFromPromisedArray(getGames(), args),
     },
   }),
 });

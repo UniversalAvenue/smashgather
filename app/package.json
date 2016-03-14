@@ -5,7 +5,8 @@
   "version": "1.0.0",
   "scripts": {
     "start": "babel-node ./server.js",
-    "update-schema": "babel-node ./scripts/updateSchema.js"
+    "update-schema": "babel-node ./scripts/updateSchema.js",
+    "create-db": "createdb smashboard; psql -d smashboard -f ./scripts/create_db.sql"
   },
   "dependencies": {
     "babel-core": "^6.5.2",
@@ -20,6 +21,7 @@
     "express-graphql": "0.4.9",
     "graphql": "0.4.17",
     "graphql-relay": "0.3.6",
+    "pg": "^4.5.1",
     "react": "0.14.7",
     "react-dom": "0.14.7",
     "react-relay": "0.7.3",
