@@ -12,7 +12,7 @@ class App extends React.Component {
               <div>createdAt: { edge.node.createdAt }</div>
               <div>user: { edge.node.user.name }</div>
               <div>character: { edge.node.character.name }</div>
-              <div>verified: { edge.node.verified }</div>
+              <div>verified: { edge.node.verified ? "true" : "false" }</div>
             </li>
           )}
         </ul>
