@@ -1,5 +1,5 @@
 var pg = require("pg")
-var databaseUrl = "pg://localhost/smashboard"
+var databaseUrl = process.env.DATABASE_URL
 
 // GraphQL object types
 class Character {}
@@ -11,14 +11,13 @@ function getCharacter(id) {
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query("SELECT * FROM characters WHERE id = $1", [id], (err, result) => {
+        done()
         if (err) {
           reject(`Error in getCharacter(): ${err}`)
-          done()
           return
         }
         if (result.rows.length < 1) {
           resolve(null)
-          done()
           return
         }
         let row = result.rows[0]
@@ -26,7 +25,6 @@ function getCharacter(id) {
           id: row.id,
           name: row.name,
         }))
-        done()
       })
     })
   })
@@ -43,14 +41,13 @@ function getUser(id) {
             WHERE users.id = $1;`,
           [id],
           (err, result) => {
+        done()
         if (err) {
           reject(`Error in getUser(): ${err}`)
-          done()
           return
         }
         if (result.rows.length < 1) {
           resolve(null)
-          done()
           return
         }
         let row = result.rows[0]
@@ -63,7 +60,6 @@ function getUser(id) {
             name: row.character_name
           }
         }))
-        done()
       })
     })
   })
@@ -85,14 +81,13 @@ function getGame(id) {
             WHERE games.id = $1;`,
           [id],
           (err, result) => {
+        done()
         if (err) {
           reject(`Error in getGame(): ${err}`)
-          done()
           return
         }
         if (result.rows.length < 1) {
           resolve(null)
-          done()
           return
         }
         let row = result.rows[0]
@@ -114,7 +109,6 @@ function getGame(id) {
             }
           }
         }))
-        done()
       })
     })
   })
@@ -125,9 +119,9 @@ function getCharacters() {
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query("SELECT * FROM characters", (err, result) => {
+        done()
         if (err) {
           reject(`Error in getCharacters(): ${err}`)
-          done()
           return
         }
         let characters = result.rows.map((row) => {
@@ -137,7 +131,6 @@ function getCharacters() {
           }
         })
         resolve(characters)
-        done()
       })
     })
   })
@@ -152,9 +145,9 @@ function getUsers() {
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id;`,
           (err, result) => {
+        done()
         if (err) {
           reject(`Error in getUsers(): ${err}`)
-          done()
           return
         }
         let users = result.rows.map((row) => {
@@ -169,7 +162,6 @@ function getUsers() {
           }
         })
         resolve(users)
-        done()
       })
     })
   })
@@ -189,9 +181,9 @@ function getGames() {
             LEFT JOIN characters AS user_characters on users.character_id = user_characters.id
             LEFT JOIN characters on games.character_id = characters.id;`,
           (err, result) => {
+        done()
         if (err) {
           reject(`Error in getGames(): ${err}`)
-          done()
           return
         }
         let games = result.rows.map((row) => {
@@ -215,7 +207,6 @@ function getGames() {
           }
         })
         resolve(games)
-        done()
       })
     })
   })
