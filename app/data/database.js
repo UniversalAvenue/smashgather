@@ -1,5 +1,5 @@
 var pg = require("pg")
-var databaseUrl = process.env.DATABASE_URL
+var databaseUrl = process.env.DATABASE_URL || "pg://localhost/smashboard"
 
 // GraphQL object types
 class Character {}
