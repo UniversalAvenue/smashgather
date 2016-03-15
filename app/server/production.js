@@ -1,8 +1,9 @@
-var express = require("express")
-var graphQLHTTP = require("express-graphql")
-var path = require("path")
-var Schema = require("./data/schema");
-var app = express();
+import express from "express"
+import graphQLHTTP from "express-graphql"
+import path from "path"
+import {Schema} from "./data/schema"
+
+let app = express()
 
 app.set("port", (process.env.PORT || 3000))
 
@@ -14,7 +15,7 @@ app.use("/graphql", graphQLHTTP({
 }))
 
 // Serve static resources
-app.use("/", express.static(path.resolve(__dirname, "public")))
+app.use("/", express.static(path.resolve(__dirname, "../public")))
 app.listen(app.get("port"), () => {
   console.log("Smashgather App is now running on port", app.get("port"))
 });

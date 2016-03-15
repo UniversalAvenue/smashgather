@@ -5,11 +5,11 @@
   "version": "1.0.0",
   "scripts": {
     "start": "babel-node ./server/dev.js",
+    "start-prod": "node ./dist/production.js",
     "update-schema": "babel-node ./scripts/updateSchema.js",
     "create-db": "createdb smashboard; psql -d smashboard -f ./scripts/create_db.sql",
-    "build": "webpack --config webpack.production.js --bail --profile && cp -r public/ dist/",
-    "build:server": "babel -d ./dist ./server",
-    "clean": "rm -rf dist/ && mkdir dist"
+    "build": "webpack --config webpack.production.js --bail --profile && babel -d ./dist ./server",
+    "clean": "rm -rf dist/ public/assets/ && mkdir dist"
   },
   "dependencies": {
     "babel-core": "^6.5.2",

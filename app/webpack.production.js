@@ -12,5 +12,9 @@ module.exports = {
       }
     ]
   },
-  output: { filename: "app.js", path: "./dist/js/" }
+  output: {
+    path: path.join(__dirname, "public/assets"),
+    filename: "app.js",
+    publicPath: "/assets/"
+  }
 };
