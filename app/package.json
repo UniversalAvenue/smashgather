@@ -13,6 +13,7 @@
     "build": "webpack --config webpack.production.js --bail --profile && babel -d ./dist ./server"
   },
   "dependencies": {
+    "babel-cli": "6.5.1",
     "babel-core": "^6.5.2",
     "babel-loader": "6.2.3",
     "babel-polyfill": "6.5.0",
@@ -31,8 +32,5 @@
     "react-relay": "0.7.3",
     "webpack": "1.12.13",
     "webpack-dev-server": "1.14.1"
-  },
-  "devDependencies": {
-    "babel-cli": "6.5.1"
   }
 }
