@@ -330,7 +330,7 @@
         {
           "kind": "OBJECT",
           "name": "Viewer",
-          "description": "Base type for Smashboard queries",
+          "description": "Base type for Smashgather queries",
           "fields": [
             {
               "name": "characters",

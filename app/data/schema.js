@@ -121,7 +121,7 @@ var gameType = new GraphQLObjectType({
 
 var viewerType = new GraphQLObjectType({
   name: "Viewer",
-  description: "Base type for Smashboard queries",
+  description: "Base type for Smashgather queries",
   fields: () => ({
     characters: {
       type: CharacterConnection,

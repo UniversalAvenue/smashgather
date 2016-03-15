@@ -8,7 +8,7 @@
     "update-schema": "babel-node ./scripts/updateSchema.js",
     "create-db": "createdb smashboard; psql -d smashboard -f ./scripts/create_db.sql",
     "build": "webpack --config webpack.production.js --bail --profile && cp -r public/ dist/",
-    "clean": "rm -rf dist/",
+    "clean": "rm -rf dist/"
   },
   "dependencies": {
     "babel-core": "^6.5.2",

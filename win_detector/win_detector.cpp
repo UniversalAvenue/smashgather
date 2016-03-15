@@ -47,14 +47,14 @@ enum WinDetectorState { INIT, GAME, WIN_DETECTED, GAME_SAVED };
 int loop() {
   WinDetectorState state = WinDetectorState::INIT;
   string banner =
-  "==========================================================================\n"
-  "   _____ __  __           _____ _    _ ____   ____          _____  _____  \n"
-  "  / ____|  \\/  |   /\\    / ____| |  | |  _ \\ / __ \\   /\\   |  __ \\|  __ \\ \n"
-  " | (___ | \\  / |  /  \\  | (___ | |__| | |_) | |  | | /  \\  | |__) | |  | |\n"
-  "  \\___ \\| |\\/| | / /\\ \\  \\___ \\|  __  |  _ <| |  | |/ /\\ \\ |  _  /| |  | |\n"
-  "  ____) | |  | |/ ____ \\ ____) | |  | | |_) | |__| / ____ \\| | \\ \\| |__| |\n"
-  " |_____/|_|  |_/_/    \\_\\_____/|_|  |_|____/ \\____/_/    \\_\\_|  \\_\\_____/ \n"
-  "==========================================================================\n";
+  "==================================================================================\n"
+  "   _____ __  __           _____ _    _  _____       _______ _    _ ______ _____  \n"
+  "  / ____|  \\/  |   /\\    / ____| |  | |/ ____|   /\\|__   __| |  | |  ____|  __ \\ \n"
+  " | (___ | \\  / |  /  \\  | (___ | |__| | |  __   /  \\  | |  | |__| | |__  | |__) |\n"
+  "  \\___ \\| |\\/| | / /\\ \\  \\___ \\|  __  | | |_ | / /\\ \\ | |  |  __  |  __| |  _  / \n"
+  "  ____) | |  | |/ ____ \\ ____) | |  | | |__| |/ ____ \\| |  | |  | | |____| | \\ \\ \n"
+  " |_____/|_|  |_/_/    \\_\\_____/|_|  |_|\\_____/_/    \\_\\_|  |_|  |_|______|_|  \\_\\\n"
+  "==================================================================================\n";
   cout << banner << "Running win detector (use CTRL+C to exit)..." << endl;
   while (true) {
     // Run detection on current screen
@@ -136,8 +136,8 @@ int main(int argc, char* argv[]) {
       return 1;
     }
   } else {
-    cout << "Continually monitors the screen output to detect SSB64 win screens, and records winner to the Smashboard server." << endl;
-    cout << "Or, when given an input image, analyzes it to detect a SSB64 win screen, and outputs winner if detected." << endl;
+    cout << "Monitors screen output to detect SSB64 win screens, and records winner to the Smashgather server." << endl;
+    cout << "Or, when given an input image, analyzes it to detect a win screen and outputs winner if detected." << endl;
     cout << "    Usage: " << argv[0] << " [-i <input_image>]" << endl;
     return 0;
   }
