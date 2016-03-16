@@ -1,3 +1,3 @@
 # Smashgather
 
-Smashgather is an OSX program that updates a Super Smash Bros 64 leaderboard using computer vision and magic.
+Smashgather is an OpenCV app that automatically records Super Smash Bros 64 games to The Internet™, using computer vision and magic.
