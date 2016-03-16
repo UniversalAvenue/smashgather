@@ -1,7 +1,7 @@
 {
-  "name": "smashboard-server",
+  "name": "smashgather-server",
   "private": true,
-  "description": "Relay server for Smashboard data",
+  "description": "Relay server for Smashgather data",
   "version": "1.0.0",
   "scripts": {
     "postinstall": "npm run build",
