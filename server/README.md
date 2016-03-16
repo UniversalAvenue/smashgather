@@ -10,8 +10,8 @@ Make sure you have Postgres installed locally, then run this command to create t
 `npm run create-db`
 
 ## Running
-`npm run start-dev`: start the webpack dev server; open http://localhost:3000 to open the app
-`npm run update-schema`: rebuild the GraphQL schema for the Relay app (needs to be done after every schema change)
-`npm run build`: compile the React app (to `public/assets`) and production server to (`dist/production.js`)
-`npm run clean`: delete all build artifacts
-`npm start`: run the production server from `dist/production.js`
+* `npm run start-dev`: start the webpack dev server; open http://localhost:3000 to open the app
+* `npm run update-schema`: rebuild the GraphQL schema for the Relay app (needs to be done after every schema change)
+* `npm run build`: compile the React app (to `public/assets`) and production server to (`dist/production.js`)
+* `npm run clean`: delete all build artifacts
+* `npm start`: run the production server from `dist/production.js`
