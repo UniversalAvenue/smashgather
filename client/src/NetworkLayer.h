@@ -5,7 +5,7 @@
 
 #include "CharacterDetails.h"
 
-bool InitNetworkLayer(std::string server_url = "http://localhost:8080/graphql");
+bool InitNetworkLayer(std::string server_url);
 
 bool RunGraphqlQuery(const std::string& query);
 

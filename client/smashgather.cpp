@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <iostream>
+#include <stdlib.h>
 
 #include "src/CaptureScreenshot.h"
 #include "src/NetworkLayer.h"
@@ -10,6 +11,7 @@
 using namespace std;
 using namespace cv;
 
+static const char* DEFAULT_SERVER_URL = "http://localhost:8080/graphql";
 enum SmashgatherState { INIT, GAME, WIN_DETECTED, GAME_SAVED };
 
 int loop() {
@@ -86,7 +88,11 @@ int main(int argc, char* argv[]) {
     "==================================================================================\n";
     cout << banner;
     cout << "Connecting to Smashgather server..." << endl;
-    if (InitNetworkLayer()) {
+    const char* pUrl = getenv("SERVER_URL");
+    if (pUrl == nullptr) {
+      pUrl = DEFAULT_SERVER_URL;
+    }
+    if (InitNetworkLayer(string(pUrl))) {
       cout << "Connected! Running Smashgather (use CTRL+C to exit)..." << endl;
       return loop();
     } else {
