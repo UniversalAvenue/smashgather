@@ -2,8 +2,8 @@ CMakeCache.txt
 CMakeFiles/
 Makefile
 cmake_install.cmake
-libWinDetector.a
-win_detector
-win_detector_tests
+libSmash.a
+smashgather
+smashgather_tests
 bin/
 lib/
