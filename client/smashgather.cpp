@@ -10,10 +10,10 @@
 using namespace std;
 using namespace cv;
 
-enum WinDetectorState { INIT, GAME, WIN_DETECTED, GAME_SAVED };
+enum SmashgatherState { INIT, GAME, WIN_DETECTED, GAME_SAVED };
 
 int loop() {
-  WinDetectorState state = WinDetectorState::INIT;
+  SmashgatherState state = SmashgatherState::INIT;
   while (true) {
     // Run detection on current screen
     auto screen = CaptureScreenshot();
@@ -23,21 +23,21 @@ int loop() {
 
     // Run state machine
     switch (state) {
-      case WinDetectorState::INIT:
+      case SmashgatherState::INIT:
         // TODO: need game screen detection to avoid spurious win detections
         // immediately fallthrough to GAME state
         cout << "STATE: GAME" << endl;
-        state = WinDetectorState::GAME;
-      case WinDetectorState::GAME:
+        state = SmashgatherState::GAME;
+      case SmashgatherState::GAME:
         // wait in this state until we detect a win screen -> WIN_DETECTED
         if (is_win) {
           cout << "STATE: WIN_DETECTED" << endl;
-          state = WinDetectorState::WIN_DETECTED;
+          state = SmashgatherState::WIN_DETECTED;
           // intentional fallthrough to next state
         } else {
           break;
         }
-      case WinDetectorState::WIN_DETECTED:
+      case SmashgatherState::WIN_DETECTED:
         // wait in this state until we either:
         // 1) detect a winner -> save game, then go to GAME_SAVED
         // 2) no longer detect win screen -> log error, go to GAME
@@ -46,22 +46,22 @@ int loop() {
             cout << "Detected winner: " << winner.name << "!" << endl;
             RunCreateGameMutation(winner);
             cout << "STATE: GAME_SAVED" << endl;
-            state = WinDetectorState::GAME_SAVED;
+            state = SmashgatherState::GAME_SAVED;
           } else {
             break;
           }
         } else {
           // TODO: record unknown winner?
           cout << "Detected win, but couldn't detect winner!";
-          state = WinDetectorState::GAME;
+          state = SmashgatherState::GAME;
           break;
         }
         break;
-      case WinDetectorState::GAME_SAVED:
+      case SmashgatherState::GAME_SAVED:
         // wait in this state until we stop detecting a win screen -> GAME
         if (!is_win) {
           cout << "STATE: GAME" << endl;
-          state = WinDetectorState::GAME;
+          state = SmashgatherState::GAME;
         }
         break;
     }
@@ -87,7 +87,7 @@ int main(int argc, char* argv[]) {
     cout << banner;
     cout << "Connecting to Smashgather server..." << endl;
     if (InitNetworkLayer()) {
-      cout << "Connected! Running win detector (use CTRL+C to exit)..." << endl;
+      cout << "Connected! Running Smashgather (use CTRL+C to exit)..." << endl;
       return loop();
     } else {
       cout << "Failed to connect to Smashgather server. Exiting..." << endl;
