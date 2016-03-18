@@ -183,10 +183,9 @@ var CreateGameMutation = mutationWithClientMutationId({
     }
   },
   mutateAndGetPayload: ({ createdAt, characterName }) => {
-    var newGame = createGame({ characterName })
-    return {
-      gameId: newGame.id,
-    };
+    return createGame({ characterName }).then((newGameId) => {
+      return { gameId: newGameId }
+    })
   }
 });
 

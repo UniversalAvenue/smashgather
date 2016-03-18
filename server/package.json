@@ -9,7 +9,8 @@
     "start": "node ./dist/production.js",
     "start-dev": "babel-node ./server/dev.js",
     "update-schema": "babel-node ./scripts/updateSchema.js",
-    "create-db": "createdb smashboard; psql -d smashboard -f ./scripts/create_db.sql",
+    "create-db": "createdb smashgather; psql -d smashgather -f ./scripts/create_db.sql",
+    "seed-db": "psql -d smashgather -f ./scripts/seed_db.sql",
     "build": "webpack --config webpack.production.js --bail --profile && babel -d ./dist ./server"
   },
   "dependencies": {

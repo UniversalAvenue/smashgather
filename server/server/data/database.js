@@ -1,5 +1,5 @@
 var pg = require("pg")
-var databaseUrl = process.env.DATABASE_URL || "pg://localhost/smashboard"
+var databaseUrl = process.env.DATABASE_URL || "pg://localhost/smashgather"
 
 // GraphQL object types
 class Character {}
@@ -215,7 +215,40 @@ function getGames() {
 function createGame({ characterName }) {
   console.log(`createGame, characterName: ${characterName}`)
   // NOTE: when this is implemented, don't forget to create a sequential game ID
-  return getGame()
+  return new Promise((resolve, reject) => {
+    pg.connect(databaseUrl, (err, client, done) => {
+      client.query(
+        `WITH winning_character AS (
+          SELECT id as character_id
+          FROM characters
+          WHERE name = $1
+          LIMIT 1
+        ), winning_user AS (
+          SELECT users.id as user_id
+          FROM users
+          LEFT JOIN characters ON users.character_id = characters.id
+          WHERE characters.name = $1
+          LIMIT 1
+        )
+        INSERT INTO games (character_id, user_id, created_at, verified)
+        SELECT character_id, user_id, CURRENT_TIMESTAMP, FALSE
+        FROM winning_character, winning_user
+        RETURNING id;`
+      , [characterName], (err, result) => {
+        done()
+        if (err) {
+          reject(`Error in createGame(): ${err}`)
+          return
+        }
+        if (result.rows.length < 1) {
+          resolve(null)
+          return
+        }
+        let newGameId = result.rows[0].id
+        resolve(newGameId)
+      })
+    })
+  })
 }
 
 module.exports = {
