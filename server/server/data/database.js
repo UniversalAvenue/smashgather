@@ -10,7 +10,11 @@ function getCharacter(id) {
   console.log("getCharacter", id)
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
-      client.query("SELECT * FROM characters WHERE id = $1", [id], (err, result) => {
+      client.query(
+          `SELECT characters.*,
+            (SELECT COUNT(*) FROM games WHERE games.character_id = characters.id) AS wins
+          FROM characters WHERE id = $1`,
+          [id], (err, result) => {
         done()
         if (err) {
           reject(`Error in getCharacter(): ${err}`)
@@ -35,7 +39,8 @@ function getUser(id) {
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
-          `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name
+          `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
             WHERE users.id = $1;`,
@@ -55,6 +60,7 @@ function getUser(id) {
           id: row.id,
           name: row.name,
           username: row.username,
+          wins: row.wins,
           character: {
             id: row.character_id,
             name: row.character_name
@@ -72,8 +78,11 @@ function getGame(id) {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
               user_characters.name AS user_character_name,
-              characters.name AS character_name
+                (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
+              characters.name AS character_name,
+                (SELECT COUNT(*) FROM games WHERE games.character_id = characters.id) AS character_wins
             FROM games
             LEFT JOIN users ON games.user_id = users.id
             LEFT JOIN characters AS user_characters on users.character_id = user_characters.id
@@ -97,15 +106,18 @@ function getGame(id) {
           verified: row.verified,
           character: {
             id: row.character_id,
-            name: row.character_name
+            name: row.character_name,
+            wins: row.character_wins
           },
           user: {
             id: row.user_id,
             name: row.user_name,
             username: row.user_username,
+            wins: row.user_wins,
             character: {
               id: row.user_character_id,
-              name: row.user_character_name
+              name: row.user_character_name,
+              wins: row.user_character_wins
             }
           }
         }))
@@ -118,7 +130,11 @@ function getCharacters() {
   console.log("getCharacters")
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
-      client.query("SELECT * FROM characters", (err, result) => {
+      client.query(
+          `SELECT characters.*,
+            (SELECT COUNT(*) FROM games WHERE games.character_id = characters.id) AS wins
+          FROM characters`,
+          (err, result) => {
         done()
         if (err) {
           reject(`Error in getCharacters(): ${err}`)
@@ -128,6 +144,7 @@ function getCharacters() {
           return {
             id: row.id,
             name: row.name,
+            wins: row.wins
           }
         })
         resolve(characters)
@@ -142,6 +159,7 @@ function getUsers() {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id;`,
           (err, result) => {
@@ -155,6 +173,7 @@ function getUsers() {
             id: row.id,
             name: row.name,
             username: row.username,
+            wins: row.wins,
             character: {
               id: row.character_id,
               name: row.character_name
@@ -174,8 +193,11 @@ function getGames() {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
               user_characters.name AS user_character_name,
-              characters.name AS character_name
+                (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
+              characters.name AS character_name,
+                (SELECT COUNT(*) FROM games WHERE games.character_id = characters.id) AS character_wins
             FROM games
             LEFT JOIN users ON games.user_id = users.id
             LEFT JOIN characters AS user_characters on users.character_id = user_characters.id
@@ -193,15 +215,18 @@ function getGames() {
             verified: row.verified,
             character: {
               id: row.character_id,
-              name: row.character_name
+              name: row.character_name,
+              wins: row.character_wins
             },
             user: {
               id: row.user_id,
               name: row.user_name,
               username: row.user_username,
+              wins: row.user_wins,
               character: {
                 id: row.user_character_id,
-                name: row.user_character_name
+                name: row.user_character_name,
+                wins: row.user_character_wins
               }
             }
           }
@@ -214,7 +239,6 @@ function getGames() {
 
 function createGame({ characterName }) {
   console.log(`createGame, characterName: ${characterName}`)
-  // NOTE: when this is implemented, don't forget to create a sequential game ID
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(

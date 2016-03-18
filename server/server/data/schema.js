@@ -69,6 +69,10 @@ var characterType = new GraphQLObjectType({
       type: GraphQLString,
       description: "The name of the character",
     },
+    wins: {
+      type: GraphQLInt,
+      description: "The number of wins for the character",
+    },
   }),
   interfaces: [nodeInterface],
 });
@@ -89,6 +93,10 @@ var userType = new GraphQLObjectType({
     character: {
       type: characterType,
       description: "The main character played by the user",
+    },
+    wins: {
+      type: GraphQLInt,
+      description: "The number of wins for the user",
     },
   }),
   interfaces: [nodeInterface],
