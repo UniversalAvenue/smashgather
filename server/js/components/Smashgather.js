@@ -7,7 +7,7 @@ import ViewerRoute from "../routes/ViewerRoute"
 
 export class Smashgather extends React.Component {
   state = {
-    selectedScreen: "GAMES",
+    selectedScreen: "USERS",
   }
 
   renderSelectedScreen() {
@@ -32,8 +32,8 @@ export class Smashgather extends React.Component {
     return (
       <div className="app-container">
         <div className="tab-bar">
-          <Tab selected={ this.state.selectedScreen } onTabClick={(name) => this.selectScreen(name)} name="GAMES" />
           <Tab selected={ this.state.selectedScreen } onTabClick={(name) => this.selectScreen(name)} name="USERS" />
+          <Tab selected={ this.state.selectedScreen } onTabClick={(name) => this.selectScreen(name)} name="GAMES" />
           <Tab selected={ this.state.selectedScreen } onTabClick={(name) => this.selectScreen(name)} name="CHARACTERS" />
         </div>
         <div className="screen">{ screen }</div>
