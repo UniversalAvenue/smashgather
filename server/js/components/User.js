@@ -14,7 +14,7 @@ class UserComponent extends React.Component {
       var victory = <div className="victory-stats">+1</div>
     }
     return (
-      <div className="user"
+      <div className={ "user " + name.toLowerCase() }
         style={{
           background: `url("${portraitUrl}")`,
           backgroundSize: "cover"

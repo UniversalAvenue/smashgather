@@ -4,9 +4,11 @@ import {User} from "./User"
 
 class UserScreenComponent extends React.Component {
   render() {
-    let users = this.props.viewer.users.edges.map((edge) => {
-      return <div key={ edge.node.id }><User user={ edge.node } showStats={true} /></div>
+
+    let users = this.props.viewer.users.edges.map(edge => {
+      return <User key={ edge.node.id } user={ edge.node } showStats={true} />
     })
+
     return (
       <div className="user-screen">
         <div className="users">

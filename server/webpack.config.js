@@ -2,9 +2,13 @@ var path = require("path");
 var webpack = require("webpack");
 
 module.exports = {
-  entry: [
-    "./js/app"
-  ],
+  entry: {
+    "app": [
+      'webpack-dev-server/client?http://localhost:3000',
+      'webpack/hot/only-dev-server',
+      "./js/app"
+    ]
+  },
   module: {
     loaders: [
       {
@@ -18,5 +22,8 @@ module.exports = {
     path: path.join(__dirname, "public/assets"),
     filename: "app.js",
     publicPath: "/assets/"
-  }
+  },
+  plugins: [
+    new webpack.HotModuleReplacementPlugin()
+  ]
 };

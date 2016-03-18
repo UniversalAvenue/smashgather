@@ -58,6 +58,22 @@ video {
   width: 140px;
   height: 140px;
 }
+
+.user-screen .user:first-child:after {
+  position: absolute;
+  content: url("img/crown.png");
+
+  top: -35px;
+  left: 30px;
+}
+
+.user-screen .user.guntars:after { left: 45px; }
+.user-screen .user.erik:after { top: -40px; }
+.user-screen .user.mansi:after { top: -40px; left: 40px }
+.user-screen .user.neville:after { left: 25px; }
+.user-screen .user.john:after { left: 40px; }
+.user-screen .user.chris:after { top: -20px; left: 35px; }
+
 .user .character {
   padding: 6px;
   margin: 0;
