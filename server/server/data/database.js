@@ -133,7 +133,8 @@ function getCharacters() {
       client.query(
           `SELECT characters.*,
             (SELECT COUNT(*) FROM games WHERE games.character_id = characters.id) AS wins
-          FROM characters`,
+          FROM characters
+          ORDER BY wins DESC;`,
           (err, result) => {
         done()
         if (err) {
@@ -158,10 +159,12 @@ function getUsers() {
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
-          `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins
+          `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
+              (SELECT COUNT(*) FROM games WHERE games.character_id = users.character_id) AS character_wins
             FROM users
-            LEFT JOIN characters ON users.character_id = characters.id;`,
+            LEFT JOIN characters ON users.character_id = characters.id
+            ORDER BY wins DESC;`,
           (err, result) => {
         done()
         if (err) {
@@ -176,7 +179,8 @@ function getUsers() {
             wins: row.wins,
             character: {
               id: row.character_id,
-              name: row.character_name
+              name: row.character_name,
+              wins: row.character_wins
             }
           }
         })
@@ -201,7 +205,8 @@ function getGames() {
             FROM games
             LEFT JOIN users ON games.user_id = users.id
             LEFT JOIN characters AS user_characters on users.character_id = user_characters.id
-            LEFT JOIN characters on games.character_id = characters.id;`,
+            LEFT JOIN characters on games.character_id = characters.id
+            ORDER BY created_at DESC;`,
           (err, result) => {
         done()
         if (err) {

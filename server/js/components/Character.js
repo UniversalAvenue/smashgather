@@ -3,10 +3,10 @@ import Relay from "react-relay"
 
 class CharacterComponent extends React.Component {
   render() {
-    let { name } = this.props.character
+    let { name, wins } = this.props.character
     let portraitUrl = `img/${name}.png`
     if (this.props.showStats) {
-      var wins = <div className="win-stats">15</div>
+      var winStats = <div className="win-stats">{ wins }</div>
     }
     if (this.props.showVictory) {
       var victory = <div className="victory-stats">+1</div>
@@ -17,7 +17,7 @@ class CharacterComponent extends React.Component {
           background: `url("${portraitUrl}")`,
           backgroundSize: "cover"
         }}>
-        <div className="stats">{ wins }{ victory }</div>
+        <div className="stats">{ winStats }{ victory }</div>
       </div>
     )
   }
@@ -28,6 +28,7 @@ export let Character = Relay.createContainer(CharacterComponent, {
     character: () => Relay.QL`
       fragment on Character {
         name
+        wins
       }
     `,
   },
