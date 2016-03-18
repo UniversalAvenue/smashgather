@@ -29,6 +29,7 @@ import {
   getUsers,
   getGames,
   createGame,
+  updateGame,
   Character,
   User,
   Game,
@@ -197,10 +198,67 @@ var CreateGameMutation = mutationWithClientMutationId({
   }
 });
 
+var UpdateGameMutation = mutationWithClientMutationId({
+  name: "UpdateGame",
+  inputFields: {
+    gameId: {
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    userId: {
+      type: GraphQLID,
+    },
+    characterId: {
+      type: GraphQLID,
+    },
+    verified: {
+      type: GraphQLBoolean,
+      description: "Whether or not the winning user has been verified",
+    }
+  },
+  outputFields: {
+    game: {
+      type: gameType,
+      resolve: (payload) => getGame(payload.gameId)
+    },
+    viewer: {
+      type: viewerType,
+      resolve: () => { return {} }
+    }
+  },
+  mutateAndGetPayload: ({ gameId, userId, characterId, verified }) => {
+    // Unpack the global ID stuff
+    if (typeof gameId != "undefined") {
+      let {type, id} = fromGlobalId(gameId)
+      if (type != "Game" || !id) {
+        throw new Error("Invalid gameId!")
+      }
+      gameId = id;
+    }
+    if (typeof userId != "undefined") {
+      let {type, id} = fromGlobalId(userId)
+      if (type != "User" || !id) {
+        throw new Error("Invalid userId!")
+      }
+      userId = id;
+    }
+    if (typeof characterId != "undefined") {
+      let {type, id} = fromGlobalId(characterId)
+      if (type != "Character" || !id) {
+        throw new Error("Invalid characterId!")
+      }
+      characterId = id;
+    }
+    return updateGame({ gameId, userId, characterId, verified }).then((updatedGameId) => {
+      return { gameId: updatedGameId }
+    })
+  }
+});
+
 var mutationType = new GraphQLObjectType({
   name: "Mutation",
   fields: () => ({
-    createGame: CreateGameMutation
+    createGame: CreateGameMutation,
+    updateGame: UpdateGameMutation
   })
 });
 

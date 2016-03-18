@@ -280,6 +280,57 @@ function createGame({ characterName }) {
   })
 }
 
+function updateGame({ gameId, userId, characterId, verified }) {
+  console.log("updateGame", gameId)
+  return new Promise((resolve, reject) => {
+    pg.connect(databaseUrl, (err, client, done) => {
+      // Query building without an ORM... Fun!
+      let changes = ""
+      let params = [gameId]
+      if (typeof userId != "undefined") {
+        params.push(userId)
+        changes += `user_id = $${params.length},`
+      }
+      if (typeof characterId != "undefined") {
+        params.push(characterId)
+        changes += `character_id = $${params.length},`
+      }
+      if (typeof verified != "undefined") {
+        params.push(verified)
+        changes += `verified = $${params.length},`
+      }
+      if (params.length == 1) {
+        // no change!
+        resolve(gameId)
+        return
+      }
+
+      // Remove trailing comma... don't give me that look!
+      changes = changes.slice(0, -1)
+
+      client.query(
+          `UPDATE games
+          SET ${changes}
+          WHERE games.id = $1
+          RETURNING id;`,
+          params,
+          (err, result) => {
+        done()
+        if (err) {
+          reject(`Error in updateGame(): ${err}`)
+          return
+        }
+        if (result.rows.length < 1) {
+          resolve(null)
+          return
+        }
+        let updatedGameId = result.rows[0].id
+        resolve(updatedGameId)
+      })
+    })
+  })
+}
+
 module.exports = {
   getCharacter,
   getUser,
@@ -288,6 +339,7 @@ module.exports = {
   getUsers,
   getGames,
   createGame,
+  updateGame,
   Character,
   User,
   Game,
