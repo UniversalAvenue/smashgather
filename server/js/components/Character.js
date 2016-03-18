@@ -4,7 +4,7 @@ import Relay from "react-relay"
 class CharacterComponent extends React.Component {
   render() {
     let { name, wins } = this.props.character
-    let portraitUrl = `img/${name}.png`
+    let portraitUrl = `img/${name.toLowerCase()}.png`
     if (this.props.showStats) {
       var winStats = <div className="win-stats">{ wins }</div>
     }

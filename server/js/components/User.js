@@ -5,7 +5,7 @@ import Relay from "react-relay"
 class UserComponent extends React.Component {
   render() {
     let { name, wins, character } = this.props.user
-    let portraitUrl = `img/${name}.png`
+    let portraitUrl = `img/${name.toLowerCase()}.png`
     if (this.props.showStats) {
       var mainCharacter = <Character character={ character } showStats={ false } />
       var winStats = <div className="win-stats">{ wins }</div>
