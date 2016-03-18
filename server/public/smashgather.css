@@ -1,0 +1,109 @@
+body {
+  margin: 0;
+  background: #FFF;
+  font-family: sans-serif;
+}
+video {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  z-index: -100;
+  transform: translateX(-50%) translateY(-50%);
+  background: url("img/fire_bg.png") no-repeat;
+  background-size: cover;
+  transition: 1s opacity;
+}
+.backdrop {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+.container {
+  padding: 20px 0;
+  position: relative;
+  vertical-align: middle;
+  width: 90%;
+  max-width: 960px;
+  margin: 0 auto;
+  text-align: center;
+}
+.title img {
+  width: 100%;
+  max-width: 600px;
+}
+.inner {
+  overflow: auto;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.7);
+}
+.characters,
+.users {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.character,
+.user {
+  position: relative;
+  margin: 10px;
+  background: #f67b45;
+  border-radius: 5px;
+  width: 140px;
+  height: 140px;
+}
+.user .character {
+  padding: 6px;
+  margin: 0;
+  width: 1em;
+  height: 1em;
+}
+.game {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+.game .user,
+.game .character {
+  width: 80px;
+  height: 80px;
+}
+.stats {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+}
+.win-stats,
+.victory-stats {
+  background: rgba(255, 255, 255, 1);
+  border-radius: 3px;
+  padding: 5px;
+  color: #f67b45;
+  box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.75);
+}
+.tab-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.tab {
+  padding: 20px;
+  text-decoration: none;
+  width: 33%;
+  text-align: center;
+  font-weight: 300;
+  color: #f67b45;
+  background: rgba(255, 255, 255, 0.9);
+}
+.tab.active {
+  background: rgba(246, 123, 69, 0.9);
+  color: #fff;
+}

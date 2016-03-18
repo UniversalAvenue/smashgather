@@ -1,15 +1,10 @@
-import "babel-polyfill";
+import "babel-polyfill"
 
-import App from "./components/App";
-import AppHomeRoute from "./routes/AppHomeRoute";
-import React from "react";
-import ReactDOM from "react-dom";
-import Relay from "react-relay";
+import {Smashgather} from "./components/Smashgather"
+import React from "react"
+import ReactDOM from "react-dom"
 
 ReactDOM.render(
-  <Relay.RootContainer
-    Component={App}
-    route={new AppHomeRoute()}
-  />,
+  <Smashgather />,
   document.getElementById("root")
-);
+)

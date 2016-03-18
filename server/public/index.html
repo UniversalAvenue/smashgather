@@ -4,9 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Smashgather</title>
+    <link rel="stylesheet" href="smashgather.css" />
   </head>
   <body>
-    <div id="root"></div>
+    <video autoplay poster="img/fire_bg.png" id="fire-vid" loop>
+      <source src="video/fire.mp4" type="video/mp4">
+    </video>
+    <div class="backdrop"></div>
+    <div class="container">
+      <div class="title">
+        <img src="img/smashgather.png" />
+      </div>
+      <div class="inner" id="root"></div>
+    </div>
     <script src="/assets/app.js"></script>
   </body>
 </html>
