@@ -1007,7 +1007,7 @@
           "inputFields": [
             {
               "name": "gameId",
-              "description": "The ID of an object",
+              "description": null,
               "type": {
                 "kind": "NON_NULL",
                 "name": null,
@@ -1021,29 +1021,21 @@
             },
             {
               "name": "userId",
-              "description": "The ID of an object",
+              "description": null,
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
               },
               "defaultValue": null
             },
             {
               "name": "characterId",
-              "description": "The ID of an object",
+              "description": null,
               "type": {
-                "kind": "NON_NULL",
-                "name": null,
-                "ofType": {
-                  "kind": "SCALAR",
-                  "name": "ID",
-                  "ofType": null
-                }
+                "kind": "SCALAR",
+                "name": "ID",
+                "ofType": null
               },
               "defaultValue": null
             },
