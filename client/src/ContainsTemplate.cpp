@@ -14,20 +14,30 @@ bool ContainsTemplate(Mat& input, Mat& templ, double threshold) {
   assert(input.type() == CV_8UC1);
   assert(templ.type() == CV_8UC1);
 
+  // Resize the input
+  Mat resized;
+  if (input.rows > 900) {
+    Size size(1600, 900);
+    resize(input, resized, size);
+  } else {
+    Size size(1440, 900);
+    resize(input, resized, size);
+  }
+
   // Create the result matrix
-  int result_cols = input.cols - templ.cols + 1;
-  int result_rows = input.rows - templ.rows + 1;
+  int result_cols = resized.cols - templ.cols + 1;
+  int result_rows = resized.rows - templ.rows + 1;
   Mat result(result_cols, result_rows, CV_32FC1);
 
-  // Match the template against the input image, and normalize resulting matrix
-  matchTemplate(input, templ, result, CV_TM_CCOEFF);
+  // Match the template against the resized image, and normalize resulting matrix
+  matchTemplate(resized, templ, result, CV_TM_CCOEFF);
   normalize(result, result, 0, 1, NORM_MINMAX, -1, Mat());
 
-  // Find the best match within the input image and crop that matching area
+  // Find the best match within the resized image and crop that matching area
   Point maxLoc;
   minMaxLoc(result, NULL, NULL, NULL, &maxLoc);
   Rect bounds(maxLoc.x, maxLoc.y, templ.cols, templ.rows);
-  Mat cropped = input(bounds);
+  Mat cropped = resized(bounds);
 
   // Determine the similarity between the cropped match and the template
   double similarity = GetMSSIM(cropped, templ)[0];

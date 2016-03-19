@@ -10,6 +10,7 @@ using namespace cv;
 // Test using training images
 int main(int argc, char* argv[]) {
   string filenames[] = {
+    "img/tests/kirby_large.png",
     "img/tests/cfalcon.png",
     "img/tests/dk.png",
     "img/tests/fox.png",
