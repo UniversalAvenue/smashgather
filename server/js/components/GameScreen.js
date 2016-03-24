@@ -4,7 +4,7 @@ import Relay from "react-relay"
 
 class GameScreenComponent extends React.Component {
   render() {
-    let games = this.props.viewer.games.edges.map((edge) => <Game key={ edge.node.id } game={ edge.node } />)
+    let games = this.props.viewer.games.edges.map((edge) => <Game key={ edge.node.id } game={ edge.node } viewer={ this.props.viewer }/>)
     return (
       <div className="game-screen">
         <div className="games">
@@ -27,6 +27,8 @@ export let GameScreen = Relay.createContainer(GameScreenComponent, {
             },
           },
         },
+
+        ${Game.getFragment("viewer")}
       }
     `,
   },
