@@ -40,7 +40,7 @@ function getUser(id) {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
             WHERE users.id = $1;`,
@@ -78,7 +78,7 @@ function getGame(id) {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
@@ -160,7 +160,7 @@ function getUsers() {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS wins,
               (SELECT COUNT(*) FROM games WHERE games.character_id = users.character_id) AS character_wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
@@ -197,7 +197,7 @@ function getGames() {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
