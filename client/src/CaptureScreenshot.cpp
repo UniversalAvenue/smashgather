@@ -36,13 +36,29 @@ Mat ConvertToMatrix(const CGImageRef& image) {
   return gray;
 }
 
+// Implement a simple RAII wrapper around OpenGL image refs
+class UniqueRef {
+public:
+  // Provide a constructor, destructor, and accessor for the ref
+  UniqueRef(const CGImageRef _ref): ref(_ref) {}
+  ~UniqueRef() { CFRelease(ref); }
+  const CGImageRef& getRef() { return ref; }
+
+  // Delete copy constructor, move constructor, copy assignment, move assignment
+  UniqueRef(const UniqueRef&) = delete;
+  UniqueRef(UniqueRef&&) = delete;
+  UniqueRef& operator=(const UniqueRef&) = delete;
+  UniqueRef& operator=(UniqueRef&&) = delete;
+
+private:
+  const CGImageRef ref;
+};
+
 Mat CaptureScreenshot() {
   auto display_ID = CGMainDisplayID();
   auto display_bounds = CGDisplayBounds(display_ID);
   auto height = CGRectGetHeight(display_bounds);
   auto width = CGRectGetWidth(display_bounds);
-  auto image = CGDisplayCreateImageForRect(display_ID, CGRectMake(0, 0, width, height));
-  Mat image_mat = ConvertToMatrix(image);
-  CFRelease(image);
-  return image_mat;
+  UniqueRef image(CGDisplayCreateImageForRect(display_ID, CGRectMake(0, 0, width, height)));
+  return ConvertToMatrix(image.getRef());
 }
