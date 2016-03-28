@@ -42,5 +42,7 @@ Mat CaptureScreenshot() {
   auto height = CGRectGetHeight(display_bounds);
   auto width = CGRectGetWidth(display_bounds);
   auto image = CGDisplayCreateImageForRect(display_ID, CGRectMake(0, 0, width, height));
-  return ConvertToMatrix(image);
+  Mat image_mat = ConvertToMatrix(image);
+  CFRelease(image);
+  return image_mat;
 }
