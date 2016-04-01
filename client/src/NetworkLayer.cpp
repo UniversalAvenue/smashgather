@@ -7,11 +7,13 @@
 using namespace std;
 
 static string server_url = "http://localhost:8080/graphql";
+static string token = "";
 static int client_mutation_id = 0;
 
-bool InitNetworkLayer(string _server_url) {
+bool InitNetworkLayer(string _server_url, string _token) {
   // Initialize our client state
   server_url = _server_url;
+  token = _token;
   client_mutation_id = 0;
 
   // Execute a simple query to check connectivity
@@ -23,6 +25,7 @@ bool RunGraphqlQuery(const string& query) {
   cout << "Start POST " << server_url << ": " + query << endl;
   auto request = cpr::Post(
       cpr::Url{server_url},
+      cpr::Header{{"Authorization", "Bearer " + token}},
       cpr::Payload{{"query", query}}
   );
   if (request.status_code == 200) {

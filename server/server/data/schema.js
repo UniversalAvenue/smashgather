@@ -191,7 +191,10 @@ var CreateGameMutation = mutationWithClientMutationId({
       resolve: () => { return {} }
     }
   },
-  mutateAndGetPayload: ({ createdAt, characterName }) => {
+  mutateAndGetPayload: ({ createdAt, characterName }, { rootValue }) => {
+    if (!rootValue.user) {
+      throw new Error("Unauthorized user!")
+    }
     return createGame({ characterName }).then((newGameId) => {
       return { gameId: newGameId }
     })
@@ -225,7 +228,10 @@ var UpdateGameMutation = mutationWithClientMutationId({
       resolve: () => { return {} }
     }
   },
-  mutateAndGetPayload: ({ gameId, userId, characterId, verified }) => {
+  mutateAndGetPayload: ({ gameId, userId, characterId, verified }, { rootValue }) => {
+    if (!rootValue.user) {
+      throw new Error("Unauthorized user!")
+    }
     // Unpack the global ID stuff
     if (typeof gameId != "undefined") {
       let {type, id} = fromGlobalId(gameId)

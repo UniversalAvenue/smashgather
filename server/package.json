@@ -26,6 +26,7 @@
     "classnames": "2.2.3",
     "express": "4.13.4",
     "express-graphql": "0.4.9",
+    "express-jwt": "^3.3.0",
     "graphql": "0.4.17",
     "graphql-relay": "0.3.6",
     "moment": "^2.12.0",
