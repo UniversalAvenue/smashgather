@@ -40,7 +40,8 @@ function getUser(id) {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS wins
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS daily_wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
             WHERE users.id = $1;`,
@@ -56,16 +57,20 @@ function getUser(id) {
           return
         }
         let row = result.rows[0]
-        resolve(Object.assign(new User(), {
+        let user = Object.assign(new User(), {
           id: row.id,
           name: row.name,
           username: row.username,
           wins: row.wins,
+          dailyWins: row.daily_wins,
           character: {
             id: row.character_id,
             name: row.character_name
           }
-        }))
+        })
+        // Remove null records from the output
+        if (!user.character.id) { user.character = null }
+        resolve(user)
       })
     })
   })
@@ -78,7 +83,8 @@ function getGame(id) {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_daily_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
@@ -100,7 +106,7 @@ function getGame(id) {
           return
         }
         let row = result.rows[0]
-        resolve(Object.assign(new Game(), {
+        let game = Object.assign(new Game(), {
           id: row.id,
           createdAt: row.created_at,
           verified: row.verified,
@@ -114,13 +120,18 @@ function getGame(id) {
             name: row.user_name,
             username: row.user_username,
             wins: row.user_wins,
+            dailyWins: row.user_daily_wins,
             character: {
               id: row.user_character_id,
               name: row.user_character_name,
               wins: row.user_character_wins
             }
           }
-        }))
+        })
+        // Remove null records from the output
+        if (!game.user.id) { game.user = null }
+        if (!game.character.id) { game.character = null }
+        resolve(game)
       })
     })
   })
@@ -160,7 +171,8 @@ function getUsers() {
     pg.connect(databaseUrl, (err, client, done) => {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS wins,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS daily_wins,
               (SELECT COUNT(*) FROM games WHERE games.character_id = users.character_id) AS character_wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
@@ -172,17 +184,21 @@ function getUsers() {
           return
         }
         let users = result.rows.map((row) => {
-          return {
+          let user = Object.assign(new User(), {
             id: row.id,
             name: row.name,
             username: row.username,
             wins: row.wins,
+            dailyWins: row.wins,
             character: {
               id: row.character_id,
               name: row.character_name,
               wins: row.character_wins
             }
-          }
+          })
+          // Remove null records from the output
+          if (!user.character.id) { user.character = null }
+          return user
         })
         resolve(users)
       })
@@ -197,7 +213,8 @@ function getGames() {
       client.query(
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_daily_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
@@ -214,7 +231,7 @@ function getGames() {
           return
         }
         let games = result.rows.map((row) => {
-          return {
+          let game = Object.assign(new Game(), {
             id: row.id,
             createdAt: row.created_at,
             verified: row.verified,
@@ -228,13 +245,18 @@ function getGames() {
               name: row.user_name,
               username: row.user_username,
               wins: row.user_wins,
+              dailyWins: row.user_daily_wins,
               character: {
                 id: row.user_character_id,
                 name: row.user_character_name,
                 wins: row.user_character_wins
               }
             }
-          }
+          })
+          // Remove null records from the output
+          if (!game.user.id) { game.user = null }
+          if (!game.character.id) { game.character = null }
+          return game
         })
         resolve(games)
       })
@@ -246,35 +268,55 @@ function createGame({ characterName }) {
   console.log(`createGame, characterName: ${characterName}`)
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
+      // First, select all users who main that character, sorted by wins
       client.query(
-        `WITH winning_character AS (
-          SELECT id as character_id
-          FROM characters
-          WHERE name = $1
-          LIMIT 1
-        ), winning_user AS (
-          SELECT users.id as user_id
-          FROM users
-          LEFT JOIN characters ON users.character_id = characters.id
-          WHERE characters.name = $1
-          LIMIT 1
-        )
-        INSERT INTO games (character_id, user_id, created_at, verified)
-        SELECT character_id, user_id, CURRENT_TIMESTAMP, FALSE
-        FROM winning_character, winning_user
-        RETURNING id;`
+        `SELECT users.id, users.name,
+          (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins
+         FROM users
+         LEFT JOIN characters ON users.character_id = characters.id
+         WHERE characters.name = $1
+         ORDER BY wins DESC`
       , [characterName], (err, result) => {
-        done()
         if (err) {
           reject(`Error in createGame(): ${err}`)
           return
         }
+        let insertGameQuery =
+          `WITH winning_character AS (
+            SELECT id as character_id
+            FROM characters
+            WHERE name = $1
+            LIMIT 1
+          ) `
+        let insertGameQueryArgs = [characterName]
         if (result.rows.length < 1) {
-          resolve(null)
-          return
+          console.log(`Found no winning user for character ${characterName}!`)
+          insertGameQuery += `INSERT INTO games (character_id, created_at, verified)
+          SELECT character_id, CURRENT_TIMESTAMP, FALSE
+          FROM winning_character
+          RETURNING id;`
+        } else {
+          console.log(`Selecting ${result.rows[0].name} as winning user for character ${characterName}!`)
+          let winningUserId = result.rows[0].id
+          insertGameQuery += `INSERT INTO games (character_id, user_id, created_at, verified)
+          SELECT character_id, $2, CURRENT_TIMESTAMP, FALSE
+          FROM winning_character
+          RETURNING id;`
+          insertGameQueryArgs.push(winningUserId)
         }
-        let newGameId = result.rows[0].id
-        resolve(newGameId)
+        client.query(insertGameQuery, insertGameQueryArgs, (err, result) => {
+          done()
+          if (err) {
+            reject(`Error in createGame(): ${err}`)
+            return
+          }
+          if (result.rows.length < 1) {
+            resolve(null)
+            return
+          }
+          let newGameId = result.rows[0].id
+          resolve(newGameId)
+        })
       })
     })
   })

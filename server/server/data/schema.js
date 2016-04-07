@@ -99,6 +99,10 @@ var userType = new GraphQLObjectType({
       type: GraphQLInt,
       description: "The number of wins for the user",
     },
+    dailyWins: {
+      type: GraphQLInt,
+      description: "The number of wins for the user in the last day",
+    },
   }),
   interfaces: [nodeInterface],
 });
