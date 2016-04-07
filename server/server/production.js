@@ -1,4 +1,5 @@
 import express from "express"
+import compression from "compression"
 import graphQLHTTP from "express-graphql"
 import path from "path"
 import {Schema} from "./data/schema"
@@ -16,6 +17,7 @@ app.set("port", (process.env.PORT || 3000))
 
 // Expose a GraphQL endpoint
 app.use(expressJwt({ secret: JWT_SECRET, credentialsRequired: false }))
+app.use(compression())
 app.use("/graphql", graphQLHTTP( request => ({
   graphiql: true,
   pretty: true,

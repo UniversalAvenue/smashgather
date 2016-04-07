@@ -11,7 +11,7 @@
     "update-schema": "babel-node ./scripts/updateSchema.js",
     "create-db": "createdb smashgather; psql -d smashgather -f ./scripts/create_db.sql",
     "seed-db": "psql -d smashgather -f ./scripts/seed_db.sql",
-    "build": "webpack --config webpack.production.js --bail --profile && babel -d ./dist ./server"
+    "build": "NODE_ENV=production webpack --config webpack.production.js --bail --profile -p && NODE_ENV=production babel -d ./dist ./server"
   },
   "dependencies": {
     "babel-cli": "6.5.1",
@@ -24,6 +24,7 @@
     "babel-preset-stage-0": "6.5.0",
     "babel-relay-plugin": "0.7.3",
     "classnames": "2.2.3",
+    "compression": "^1.6.1",
     "express": "4.13.4",
     "express-graphql": "0.4.9",
     "express-jwt": "^3.3.0",
