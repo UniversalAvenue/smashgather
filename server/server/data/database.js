@@ -28,6 +28,7 @@ function getCharacter(id) {
         resolve(Object.assign(new Character(), {
           id: row.id,
           name: row.name,
+          wins: row.wins,
         }))
       })
     })
@@ -61,7 +62,7 @@ function getUser(id) {
           id: row.id,
           name: row.name,
           username: row.username,
-          wins: row.wins,
+          wins: row.daily_wins, // TODO: revert!
           dailyWins: row.daily_wins,
           character: {
             id: row.character_id,
@@ -119,7 +120,7 @@ function getGame(id) {
             id: row.user_id,
             name: row.user_name,
             username: row.user_username,
-            wins: row.user_wins,
+            wins: row.daily_wins, // TODO: revert!
             dailyWins: row.user_daily_wins,
             character: {
               id: row.user_character_id,
@@ -188,7 +189,7 @@ function getUsers() {
             id: row.id,
             name: row.name,
             username: row.username,
-            wins: row.wins,
+            wins: row.daily_wins, // TODO: revert!
             dailyWins: row.wins,
             character: {
               id: row.character_id,
@@ -244,7 +245,7 @@ function getGames() {
               id: row.user_id,
               name: row.user_name,
               username: row.user_username,
-              wins: row.user_wins,
+              wins: row.daily_wins, // TODO: revert!
               dailyWins: row.user_daily_wins,
               character: {
                 id: row.user_character_id,
