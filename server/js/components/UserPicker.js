@@ -4,11 +4,12 @@ import {User} from "./User"
 
 export class UserPickerComponent extends React.Component {
   render() {
+    let { current, viewer } = this.props
 
     let first = <User user={ this.props.current } />
     let rest = this.props.viewer.users.edges
       .map(edge => edge.node)
-      .filter(user => user.id !== this.props.current.id)
+      .filter(user => !current || user.id !== this.props.current.id)
       .map(user => <User key={ user.id } user={ user } onClick={ this.selectUser.bind(this, user) } />)
 
     return <div className="user-picker">

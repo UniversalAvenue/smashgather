@@ -4,17 +4,23 @@ import Relay from "react-relay"
 
 class UserComponent extends React.Component {
   render() {
-    let { name, wins, character } = this.props.user
-    let portraitUrl = `img/${name.toLowerCase()}.png`
-    if (this.props.showStats) {
-      var mainCharacter = <Character character={ character } showStats={ false } />
-      var winStats = <div className="win-stats">{ wins }</div>
-    }
-    if (this.props.showVictory) {
-      var victory = <div className="victory-stats">+1</div>
+    let { user, showStats, showVictory, onClick } = this.props
+    if (user) {
+      var { name, character } = user
+      var portraitUrl = `img/${name.toLowerCase()}.png`
+      if (showStats === "wins" || showStats === "weeklyWins") {
+        var mainCharacter = <Character character={ character } />
+        var winStats = <div className="win-stats">{ user[showStats] }</div>
+      }
+      if (showVictory) {
+        var victory = <div className="victory-stats">+1</div>
+      }
+    } else {
+      var name = "unknown"
+      var portraitUrl = "img/unknown.png"
     }
     return (
-      <div className={ "user " + name.toLowerCase() } onClick={ this.props.onClick }
+      <div className={ "user " + name.toLowerCase() } onClick={ onClick }
         style={{
           background: `url("${portraitUrl}")`,
           backgroundSize: "cover"
@@ -31,6 +37,7 @@ export let User = Relay.createContainer(UserComponent, {
       fragment on User {
         name
         wins
+        weeklyWins
         character {
           ${Character.getFragment("character")}
         }

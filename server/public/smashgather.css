@@ -151,3 +151,25 @@ video {
   background: rgba(246, 123, 69, 0.9);
   color: #fff;
 }
+.order-picker,
+.load-more {
+  margin: 0 auto;
+  width: 100%;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: space-around;
+  color: #CCC;
+  padding: 20px;
+  font-weight: 300;
+}
+a, a:visited {
+  color: #CCC;
+  text-decoration: none;
+}
+a:hover {
+  color: #f67b45;
+}
+.order-picker span.active {
+  color: #f67b45;
+}

@@ -5,7 +5,7 @@ class CharacterComponent extends React.Component {
   render() {
     let { name, wins } = this.props.character
     let portraitUrl = `img/${name.toLowerCase()}.png`
-    if (this.props.showStats) {
+    if (this.props.showStats == "wins") {
       var winStats = <div className="win-stats">{ wins }</div>
     }
     if (this.props.showVictory) {

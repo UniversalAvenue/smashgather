@@ -24,9 +24,9 @@ class GameComponent extends React.Component {
 
     return (
       <div className="game">
-        <Character character={ character } showStats={ false } showVictory={ true } />
+        <Character character={ character } showVictory={ true } />
         <div className="winning-user">
-          <User user={ user } showStats={ false } showVictory={ true } onClick={ this.toggleEditing.bind(this) } />
+          <User user={ user } showVictory={ true } onClick={ this.toggleEditing.bind(this) } />
           { editor }
         </div>
         <div>{ moment(new Date(createdAt)).fromNow() }</div>

@@ -5,7 +5,7 @@ import Relay from "react-relay"
 class CharacterScreenComponent extends React.Component {
   render() {
     let characters = this.props.viewer.characters.edges.map((edge) => {
-      return <div key={ edge.node.id }><Character character={ edge.node } showStats={true} /></div>
+      return <div key={ edge.node.id }><Character character={ edge.node } showStats="wins" /></div>
     })
     return (
       <div className="character-screen">
