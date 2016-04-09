@@ -4,12 +4,13 @@ import {User} from "./User"
 
 class UserScreenComponent extends React.Component {
   render() {
+    let { order } = this.props.relay.variables
 
     let users = this.props.viewer.users.edges.map(edge => {
-      return <User key={ edge.node.id } user={ edge.node } showStats="weeklyWins" />
+      return <User key={ edge.node.id } user={ edge.node } showStats={ order } />
     })
 
-    if (this.props.relay.variables.order == "weeklyWins") {
+    if (order == "weeklyWins") {
       var orderPicker = <div className="order-picker">
         <span className="active">WEEKLY</span>
         <span>|</span>
