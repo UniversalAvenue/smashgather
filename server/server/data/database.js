@@ -41,7 +41,7 @@ function getUser(id) {
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
               (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS daily_wins
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '6 days'::interval)) AS weekly_wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
             WHERE users.id = $1;`,
@@ -62,7 +62,7 @@ function getUser(id) {
           name: row.name,
           username: row.username,
           wins: row.wins,
-          dailyWins: row.daily_wins,
+          weeklyWins: row.weekly_wins,
           character: {
             id: row.character_id,
             name: row.character_name
@@ -84,7 +84,7 @@ function getGame(id) {
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
                 (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_daily_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '6 days'::interval)) AS user_weekly_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
@@ -120,7 +120,7 @@ function getGame(id) {
             name: row.user_name,
             username: row.user_username,
             wins: row.user_wins,
-            dailyWins: row.user_daily_wins,
+            weeklyWins: row.user_weekly_wins,
             character: {
               id: row.user_character_id,
               name: row.user_character_name,
@@ -165,18 +165,28 @@ function getCharacters() {
   })
 }
 
-function getUsers() {
+function getUsers({ order }) {
   console.log("getUsers")
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
+      let orderArg = null
+      if (typeof order === "undefined" || order === null || order === "wins") {
+        orderArg = "wins"
+      } else if (order === "weeklyWins") {
+        orderArg = "weekly_wins"
+      } else {
+        reject(`Invalid order argument: ${order}`)
+        return
+      }
+      console.log("ORDER BY ", orderArg)
       client.query(
           `SELECT users.id, users.name, users.username, users.character_id, characters.name AS character_name,
               (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS wins,
-              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS daily_wins,
+              (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '6 days'::interval)) AS weekly_wins,
               (SELECT COUNT(*) FROM games WHERE games.character_id = users.character_id) AS character_wins
             FROM users
             LEFT JOIN characters ON users.character_id = characters.id
-            ORDER BY wins DESC;`,
+            ORDER BY ${orderArg} DESC;`,
           (err, result) => {
         done()
         if (err) {
@@ -189,7 +199,7 @@ function getUsers() {
             name: row.name,
             username: row.username,
             wins: row.wins,
-            dailyWins: row.wins,
+            weeklyWins: row.weekly_wins,
             character: {
               id: row.character_id,
               name: row.character_name,
@@ -214,7 +224,7 @@ function getGames() {
           `SELECT games.id, games.created_at, games.user_id, games.character_id, games.verified,
               users.name AS user_name, users.username AS user_username, users.character_id AS user_character_id,
                 (SELECT COUNT(*) FROM games WHERE games.user_id = users.id) AS user_wins,
-                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '1 day'::interval)) AS user_daily_wins,
+                (SELECT COUNT(*) FROM games WHERE games.user_id = users.id AND games.created_at > (now() - '6 days'::interval)) AS user_weekly_wins,
               user_characters.name AS user_character_name,
                 (SELECT COUNT(*) FROM games WHERE games.character_id = user_characters.id) AS user_character_wins,
               characters.name AS character_name,
@@ -245,7 +255,7 @@ function getGames() {
               name: row.user_name,
               username: row.user_username,
               wins: row.user_wins,
-              dailyWins: row.user_daily_wins,
+              weeklyWins: row.user_weekly_wins,
               character: {
                 id: row.user_character_id,
                 name: row.user_character_name,

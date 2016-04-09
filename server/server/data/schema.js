@@ -99,9 +99,9 @@ var userType = new GraphQLObjectType({
       type: GraphQLInt,
       description: "The number of wins for the user",
     },
-    dailyWins: {
+    weeklyWins: {
       type: GraphQLInt,
-      description: "The number of wins for the user in the last day",
+      description: "The number of wins for the user in the last week",
     },
   }),
   interfaces: [nodeInterface],
@@ -145,8 +145,12 @@ var viewerType = new GraphQLObjectType({
     users: {
       type: UserConnection,
       description: "Available Smash users",
-      args: connectionArgs,
-      resolve: (_, args) => connectionFromPromisedArray(getUsers(), args),
+      args: Object.assign(connectionArgs, {
+        order: {
+          type: GraphQLString
+        },
+      }),
+      resolve: (_, args) => connectionFromPromisedArray(getUsers(args), args),
     },
     games: {
       type: GameConnection,
