@@ -6,6 +6,7 @@
 #include <unistd.h>
 
 #include "src/CaptureScreenshot.h"
+#include "src/SaveWinScreen.h"
 #include "src/NetworkLayer.h"
 #include "src/WinDetector.h"
 
@@ -48,6 +49,7 @@ int loop() {
         if (is_win) {
           if (is_winner_detected) {
             cout << "Detected winner: " << winner.name << "!" << endl;
+            auto image_path = SaveWinScreen(screen);
             RunCreateGameMutation(winner);
             cout << "STATE: GAME_SAVED" << endl;
             state = SmashgatherState::GAME_SAVED;
