@@ -7,6 +7,7 @@ import WebpackDevServer from "webpack-dev-server"
 import {Schema} from "./data/schema"
 import expressJwt from "express-jwt"
 import jwt from "jsonwebtoken"
+import multer from 'multer'
 
 const APP_PORT = 3000
 const GRAPHQL_PORT = 8080
@@ -15,11 +16,15 @@ const JWT_SECRET = process.env.JWT_SECRET || "MyDevelopmentServerSecret"
 // Expose a GraphQL endpoint
 var graphQLServer = express()
 graphQLServer.use(expressJwt({ secret: JWT_SECRET, credentialsRequired: false }))
+graphQLServer.use("/graphql", multer({ storage: multer.memoryStorage() }).single('screenshot'))
 graphQLServer.use("/graphql", graphQLHTTP( request => ({
   graphiql: true,
   pretty: true,
   schema: Schema,
-  rootValue: { user: request.user },
+  rootValue: {
+    user: request.user,
+    request: request
+  },
 })))
 graphQLServer.listen(GRAPHQL_PORT, () => console.log(
   `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}`

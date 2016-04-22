@@ -1,4 +1,5 @@
 var pg = require("pg")
+var fileType = require("file-type")
 var databaseUrl = process.env.DATABASE_URL || "pg://localhost/smashgather"
 
 // GraphQL object types
@@ -274,8 +275,11 @@ function getGames() {
   })
 }
 
-function createGame({ characterName }) {
+function createGame({ characterName, screenshot }) {
   console.log(`createGame, characterName: ${characterName}`)
+
+  let screenshotDataURL = "data:" + fileType(screenshot.buffer).mime + ";base64," + screenshot.buffer.toString('base64')
+
   return new Promise((resolve, reject) => {
     pg.connect(databaseUrl, (err, client, done) => {
       // First, select all users who main that character, sorted by wins
@@ -298,18 +302,18 @@ function createGame({ characterName }) {
             WHERE name = $1
             LIMIT 1
           ) `
-        let insertGameQueryArgs = [characterName]
+        let insertGameQueryArgs = [characterName, screenshotDataURL]
         if (result.rows.length < 1) {
           console.log(`Found no winning user for character ${characterName}!`)
-          insertGameQuery += `INSERT INTO games (character_id, created_at, verified)
-          SELECT character_id, CURRENT_TIMESTAMP, FALSE
+          insertGameQuery += `INSERT INTO games (character_id, created_at, verified, screenshot)
+          SELECT character_id, CURRENT_TIMESTAMP, FALSE, $2
           FROM winning_character
           RETURNING id;`
         } else {
           console.log(`Selecting ${result.rows[0].name} as winning user for character ${characterName}!`)
           let winningUserId = result.rows[0].id
-          insertGameQuery += `INSERT INTO games (character_id, user_id, created_at, verified)
-          SELECT character_id, $2, CURRENT_TIMESTAMP, FALSE
+          insertGameQuery += `INSERT INTO games (character_id, user_id, created_at, verified, screenshot)
+          SELECT character_id, $3, CURRENT_TIMESTAMP, FALSE, $2
           FROM winning_character
           RETURNING id;`
           insertGameQueryArgs.push(winningUserId)

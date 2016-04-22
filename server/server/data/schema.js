@@ -203,7 +203,7 @@ var CreateGameMutation = mutationWithClientMutationId({
     if (!rootValue.user) {
       throw new Error("Unauthorized user!")
     }
-    return createGame({ characterName }).then((newGameId) => {
+    return createGame({ characterName, screenshot: rootValue.request.file }).then((newGameId) => {
       return { gameId: newGameId }
     })
   }

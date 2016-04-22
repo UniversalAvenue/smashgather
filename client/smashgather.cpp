@@ -49,8 +49,8 @@ int loop() {
         if (is_win) {
           if (is_winner_detected) {
             cout << "Detected winner: " << winner.name << "!" << endl;
-            auto image_path = SaveWinScreen(screen);
-            RunCreateGameMutation(winner);
+            auto screenshot_path = SaveWinScreen(screen);
+            RunCreateGameMutation(winner, screenshot_path);
             cout << "STATE: GAME_SAVED" << endl;
             state = SmashgatherState::GAME_SAVED;
           } else {

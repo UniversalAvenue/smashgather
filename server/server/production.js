@@ -5,6 +5,7 @@ import path from "path"
 import {Schema} from "./data/schema"
 import expressJwt from "express-jwt"
 import jwt from "jsonwebtoken"
+import multer from 'multer'
 
 const JWT_SECRET = process.env.JWT_SECRET
 if (!JWT_SECRET) {
@@ -18,11 +19,15 @@ app.set("port", (process.env.PORT || 3000))
 // Expose a GraphQL endpoint
 app.use(expressJwt({ secret: JWT_SECRET, credentialsRequired: false }))
 app.use(compression())
+app.use("/graphql", multer({ storage: multer.memoryStorage() }).single('screenshot'))
 app.use("/graphql", graphQLHTTP( request => ({
   graphiql: true,
   pretty: true,
   schema: Schema,
-  rootValue: { user: request.user },
+  rootValue: {
+    user: request.user,
+    request: request
+  },
 })))
 
 // Serve static resources

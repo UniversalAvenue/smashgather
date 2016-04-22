@@ -22,12 +22,25 @@ bool InitNetworkLayer(string _server_url, string _token) {
 }
 
 bool RunGraphqlQuery(const string& query) {
+  return RunGraphqlQuery(query, "");
+}
+
+bool RunGraphqlQuery(const string& query, const string& screenshot) {
   cout << "Start POST " << server_url << ": " + query << endl;
-  auto request = cpr::Post(
-      cpr::Url{server_url},
-      cpr::Header{{"Authorization", "Bearer " + token}},
-      cpr::Payload{{"query", query}}
-  );
+  cpr::Response request;
+  if (screenshot.length() == 0) {
+    request = cpr::Post(
+        cpr::Url{server_url},
+        cpr::Header{{"Authorization", "Bearer " + token}},
+        cpr::Payload{{"query", query}}
+    );
+  } else {
+    request = cpr::Post(
+        cpr::Url{server_url},
+        cpr::Header{{"Authorization", "Bearer " + token}},
+        cpr::Multipart{{"query", query}, {"screenshot", cpr::File{screenshot}}}
+    );
+  };
   if (request.status_code == 200) {
     cout << "Finished POST " << server_url << endl;
     cout << "Response (code: " << request.status_code << "):" << endl;
@@ -41,7 +54,7 @@ bool RunGraphqlQuery(const string& query) {
   }
 }
 
-bool RunCreateGameMutation(const CharacterDetails& winner) {
+bool RunCreateGameMutation(const CharacterDetails& winner, const string& screenshot) {
   const string name = winner.name;
   ostringstream oss;
   oss << "mutation create_game { createGame(input: { "
@@ -50,6 +63,5 @@ bool RunCreateGameMutation(const CharacterDetails& winner) {
     << "}) { game { createdAt, user { name }, character { name } } } }";
   string query = oss.str();
   ++client_mutation_id;
-  return RunGraphqlQuery(query);
+  return RunGraphqlQuery(query, screenshot);
 }
-

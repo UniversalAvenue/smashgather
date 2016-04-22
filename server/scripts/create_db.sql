@@ -15,5 +15,6 @@ CREATE TABLE games (
   created_at TIMESTAMP WITH TIME ZONE,
   user_id INTEGER REFERENCES users (id),
   character_id INTEGER REFERENCES characters (id),
-  verified BOOLEAN
+  verified BOOLEAN,
+  screenshot TEXT
 );
