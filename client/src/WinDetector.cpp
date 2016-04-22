@@ -13,7 +13,7 @@ using namespace cv;
 
 bool IsWinScreen(Mat& screen) {
   Mat templ;
-  cvtColor(imread("img/templates/wins_template.jpg"), templ, COLOR_BGR2GRAY);
+  cvtColor(imread("img/templates/KOs.png"), templ, COLOR_BGR2GRAY);
   return ContainsTemplate(screen, templ);
 }
 
