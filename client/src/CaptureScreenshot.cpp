@@ -29,11 +29,11 @@ Mat ConvertToMatrix(const CGImageRef& image) {
   CGContextDrawImage(context, CGRectMake(0, 0, cols, rows), image);
   CGContextRelease(context);
 
-  // Convert to grayscale format
-  Mat gray(rows, cols, CV_8UC1);
-  cvtColor(matrix, gray, COLOR_BGR2GRAY);
+  // Convert to BGR format
+  Mat bgr(rows, cols, CV_8UC3);
+  cvtColor(matrix, bgr, COLOR_RGBA2BGR);
 
-  return gray;
+  return bgr;
 }
 
 // Implement a simple RAII wrapper around OpenGL image refs

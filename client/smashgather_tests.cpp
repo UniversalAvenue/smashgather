@@ -34,8 +34,7 @@ int main(int argc, char* argv[]) {
   cout << "Running tests..." << endl;
   cout << "filename, IsWinScreen, GetCharacterMatch, Name" << endl;
   for (string filename: filenames) {
-    Mat input;
-    cvtColor(imread(filename), input, COLOR_BGR2GRAY);
+    Mat input = imread(filename);
     bool is_win = false, is_winner_detected = false;
     CharacterDetails winner("n/a", "");
 

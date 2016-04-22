@@ -30,11 +30,15 @@ bool ExtractWinner(Mat& screen, CharacterDetails& winner) {
 }
 
 bool DetectWin(cv::Mat& screen, bool& is_winner_detected, CharacterDetails& winner) {
+  // Convert to grayscale first
+  Mat gray;
+  cvtColor(screen, gray, COLOR_BGR2GRAY);
+
   bool is_win = false;
   is_winner_detected = false;
-  is_win = IsWinScreen(screen);
+  is_win = IsWinScreen(gray);
   if (is_win) {
-    is_winner_detected = ExtractWinner(screen, winner);
+    is_winner_detected = ExtractWinner(gray, winner);
   }
   return is_win;
 }

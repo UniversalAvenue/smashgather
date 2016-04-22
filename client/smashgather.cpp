@@ -107,8 +107,7 @@ int main(int argc, char* argv[]) {
     }
   } else if (argc == 3 && strcmp(argv[1], "-i") == 0) {
     // Analyze input image
-    Mat input;
-    cvtColor(imread(argv[2]), input, COLOR_BGR2GRAY);
+    Mat input = imread(argv[2]);
     bool is_win = false, is_winner_detected = false;
     CharacterDetails winner("n/a", "");
 
