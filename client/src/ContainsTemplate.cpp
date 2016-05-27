@@ -13,7 +13,12 @@ using namespace cv;
 
 // Find the actual image coords ignoring any black borders
 Rect FindImageRect(Mat &mask) {
-  assert(mask.type() == CV_8UC1);
+
+  if (mask.type() != CV_8UC1) {
+    Mat grayscale;
+    cvtColor(mask, grayscale, CV_BGR2GRAY);
+    return FindImageRect(grayscale);
+  }
 
   Point a, b;
 

@@ -6,6 +6,7 @@
 // 60% structural similarity seems good enough based on my limited testing
 const double MSSIM_THRESHOLD = 0.6;
 
+void TrimBlackContour(cv::Mat&, cv::Mat&);
 bool ContainsTemplate(cv::Mat&, cv::Mat&, double threshold = MSSIM_THRESHOLD);
 
 #endif
