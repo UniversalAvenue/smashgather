@@ -9,20 +9,88 @@ using namespace std;
 using namespace cv;
 
 #include <iostream>
+#include <algorithm>
+
+// Find the actual image coords ignoring any black borders
+Rect FindImageRect(Mat &mask) {
+  assert(mask.type() == CV_8UC1);
+
+  Point a, b;
+
+  for (size_t i = 0; i < mask.rows; i++) {
+    auto row = mask.row(i);
+
+    // Check if row contains any non-black pixels
+    auto is_black = std::all_of(row.begin<uint8_t>(), row.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      a.y = i;
+      break;
+    }
+  }
+
+  for (size_t i = mask.rows-1; i > 0; i--) {
+    auto row = mask.row(i);
+
+    // Check if row contains any non-black pixels
+    auto is_black = std::all_of(row.begin<uint8_t>(), row.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      b.y = i + 1;
+      break;
+    }
+  }
+
+  for (size_t i = 0; i < mask.cols; i++) {
+    auto col = mask.col(i);
+
+    // Check if col contains any non-black pixels
+    auto is_black = std::all_of(col.begin<uint8_t>(), col.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      a.x = i;
+      break;
+    }
+  }
+
+  for (size_t i = mask.cols-1; i != 0; i--) {
+    auto col = mask.col(i);
+
+    // Check if col contains any non-black pixels
+    auto is_black = std::all_of(col.begin<uint8_t>(), col.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      b.x = i + 1;
+      break;
+    }
+  }
+
+  return Rect(a, b);
+}
+
+void TrimBlackContour(Mat& input, Mat& resized) {
+
+  auto roi = FindImageRect(input);
+
+  // Our templates are scaled for the 826px high screenshots, so if the screen is
+  // a different size, we have to scale it to the 826px height.
+  //
+  // Aspect ratio of the image should be 1.36
+  if (roi.height == 826) {
+    input(roi).copyTo(resized);
+  } else {
+    Size size(roi.width * 826 / roi.height, 826);
+    resize(input(roi), resized, size);
+  }
+}
 
 bool ContainsTemplate(Mat& input, Mat& templ, double threshold) {
   assert(input.type() == CV_8UC1);
   assert(templ.type() == CV_8UC1);
 
-  // Resize the input
+  // Trim the black contour and resize the input
   Mat resized;
-  if (input.rows > 900) {
-    Size size(1600, 900);
-    resize(input, resized, size);
-  } else {
-    Size size(1440, 900);
-    resize(input, resized, size);
-  }
+  TrimBlackContour(input, resized);
 
   // Create the result matrix
   int result_cols = resized.cols - templ.cols + 1;
@@ -44,4 +112,3 @@ bool ContainsTemplate(Mat& input, Mat& templ, double threshold) {
 
   return similarity > threshold;
 }
-
