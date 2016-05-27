@@ -10,6 +10,11 @@
 using namespace std;
 using namespace cv;
 
+string randomFilename() {
+  auto time = std::chrono::system_clock::now();
+  return to_string(time.time_since_epoch().count()) + ".png";
+}
+
 // Test using training images
 int main(int argc, char* argv[]) {
 
@@ -33,9 +38,7 @@ int main(int argc, char* argv[]) {
     TrimBlackContour(contents, screenshot);
 
     for(auto &pos : icon_pos) {
-      auto time = std::chrono::system_clock::now();
-      auto output_filename = to_string(time.time_since_epoch().count()) + ".png";
-      imwrite(output_filename, screenshot(pos));
+      imwrite(randomFilename(), screenshot(pos));
     }
   }
 

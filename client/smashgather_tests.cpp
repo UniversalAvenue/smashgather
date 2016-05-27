@@ -11,6 +11,7 @@ using namespace cv;
 int main(int argc, char* argv[]) {
   string filenames[] = {
     "img/tests/kirby_large.png",
+    "img/tests/kirby_with_emulator_toolbar.png",
     "img/tests/cfalcon.png",
     "img/tests/dk.png",
     "img/tests/dk_no_border.png",
