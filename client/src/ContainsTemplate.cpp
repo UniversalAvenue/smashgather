@@ -11,31 +11,76 @@ using namespace cv;
 #include <iostream>
 #include <algorithm>
 
-bool largest_area(const vector<Point> a, const vector<Point> b) {
-  return
+// Find the actual image coords ignoring any black borders
+Rect FindImageRect(Mat &mask) {
+  assert(mask.type() == CV_8UC1);
+
+  Point a, b;
+
+  for (size_t i = 0; i < mask.rows; i++) {
+    auto row = mask.row(i);
+
+    // Check if row contains any non-black pixels
+    auto is_black = std::all_of(row.begin<uint8_t>(), row.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      a.y = i;
+      break;
+    }
+  }
+
+  for (size_t i = mask.rows-1; i > 0; i--) {
+    auto row = mask.row(i);
+
+    // Check if row contains any non-black pixels
+    auto is_black = std::all_of(row.begin<uint8_t>(), row.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      b.y = i + 1;
+      break;
+    }
+  }
+
+  for (size_t i = 0; i < mask.cols; i++) {
+    auto col = mask.col(i);
+
+    // Check if col contains any non-black pixels
+    auto is_black = std::all_of(col.begin<uint8_t>(), col.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      a.x = i;
+      break;
+    }
+  }
+
+  for (size_t i = mask.cols-1; i != 0; i--) {
+    auto col = mask.col(i);
+
+    // Check if col contains any non-black pixels
+    auto is_black = std::all_of(col.begin<uint8_t>(), col.end<uint8_t>(), [](uint8_t pixel){ return pixel == 0; });
+
+    if (!is_black) {
+      b.x = i + 1;
+      break;
+    }
+  }
+
+  return Rect(a, b);
 }
 
 void TrimBlackContour(Mat& input, Mat& resized) {
 
-  Mat mask;
-  vector<vector<Point>> contours;
+  auto roi = FindImageRect(input);
 
-  // Create a binary mask of the input image where any pixel that's not black is white
-  // Then find the contours of the resulting white rectangle.
-  threshold(input, mask, 1, 255, THRESH_BINARY);
-  findContours(mask, contours, CV_EXTERNAL, CV_CHAIN_APPROX_SIMPLE);
-
-  auto it = minmax_element(contours.begin(), contours.end(), largest_area);
-
-  cout << boundingRect(contours[0]) << endl;
-  // cout << *it.first << " " << *it.second << endl;
-
-  if (input.rows > 900) {
-    Size size(1600, 900);
-    resize(input, resized, size);
+  // Our templates are scaled for the 826px high screenshots, so if the screen is
+  // a different size, we have to scale it to the 826px height.
+  //
+  // Aspect ratio of the image should be 1.36
+  if (roi.height == 826) {
+    input(roi).copyTo(resized);
   } else {
-    Size size(1440, 900);
-    resize(input, resized, size);
+    Size size(roi.width * 826 / roi.height, 826);
+    resize(input(roi), resized, size);
   }
 }
 
