@@ -5,6 +5,7 @@ cmake_install.cmake
 libSmash.a
 smashgather
 smashgather_tests
+train_classifier
 extract_player_icons
 bin/
 lib/
