@@ -46,7 +46,7 @@ vector<CharacterDetails> ExtractWinners(cv::Mat& screen) {
   for (auto &place_template : glob("img/templates/*_place.png")) {
     Mat templ;
     cvtColor(imread(place_template), templ, COLOR_BGR2GRAY);
-    auto pos = ContainsTemplatePos(gray, templ, 0.3);
+    auto pos = ContainsTemplatePos(gray, templ);
 
     if (pos.area() == 0) {
       cerr << "Template " << place_template << " did not match anything in the win screen\n";
