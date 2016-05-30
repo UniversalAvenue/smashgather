@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
   if (action == "train") {
 
     // Get all the character names in the training data directory.
-    auto characters = glob("./training_data/*");
+    auto characters = glob("./img/training_data/*");
     transform(characters.begin(), characters.end(), characters.begin(), basename);
 
     // Init the training data matrix and fill it with the samples while also adding the correct
@@ -35,15 +35,14 @@ int main(int argc, char* argv[]) {
     Mat labels(0, 1, CV_32FC1);
 
     for(auto &character : characters) {
-      // The class id is simply the index of the character name in Classifier::characters
-      auto it = find(Classifier::characters.begin(), Classifier::characters.end(), character);
-      if (it == Classifier::characters.end()) {
-        cout << "Unknown character in ./training_data: " << character << endl;
+      auto class_id = (double) Classifier::class_id(character);
+
+      if (class_id == -1) {
+        cerr << "Unknown character: " << character << endl;
         return 1;
       }
-      auto class_id = (double) distance(Classifier::characters.begin(), it);
 
-      for(auto &filename : glob("./training_data/" + character + "/*.png")) {
+      for(auto &filename : glob("./img/training_data/" + character + "/*.png")) {
         auto image = imread(filename);
 
         training_data.push_back(Classifier::convert_image(image));
@@ -69,9 +68,9 @@ int main(int argc, char* argv[]) {
 
     Classifier classifier("multi-class.svm");
 
-    for(auto &filename : glob("./training_data/*/*.png")) {
-      auto label = classifier.classify(imread(filename));
-      cout << filename << " " << label << endl;
+    for(auto &filename : glob("./img/training_data/*/*.png")) {
+      auto character = classifier.classify(imread(filename));
+      cout << filename << " " << character.name << endl;
     }
 
   } else {

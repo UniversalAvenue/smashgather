@@ -24,12 +24,6 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  vector<Rect> icon_pos;
-  icon_pos.push_back(Rect(415, 146, 40, 40));
-  icon_pos.push_back(Rect(565, 146, 40, 40));
-  icon_pos.push_back(Rect(715, 146, 40, 40));
-  icon_pos.push_back(Rect(865, 146, 40, 40));
-
   for (size_t i = 1; i < argc; i++) {
     auto filename = string(argv[i]);
     auto contents = imread(filename);
@@ -37,7 +31,7 @@ int main(int argc, char* argv[]) {
     Mat screenshot;
     TrimBlackContour(contents, screenshot);
 
-    for(auto &pos : icon_pos) {
+    for(auto &pos : CharacterIconPositions) {
       imwrite(randomFilename(), screenshot(pos));
     }
   }

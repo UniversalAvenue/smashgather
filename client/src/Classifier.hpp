@@ -6,6 +6,8 @@
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/ml/ml.hpp>
 
+#include "CharacterDetails.h"
+
 using namespace std;
 using namespace cv;
 
@@ -18,9 +20,23 @@ public:
   }
 
   // Guess the characters name from the image icon.
-  string classify(const Mat &image) {
+  const CharacterDetails& classify(const Mat &image) {
     auto class_id = (size_t) svm.predict(Classifier::convert_image(image));
-    return characters[class_id];
+    return CHARACTERS[class_id];
+  }
+
+  // Get the class id from a character name. It's simply the index of the character in CHARACTERS.
+  static int class_id(string character) {
+    auto idx = 0;
+    for(auto &CHAR : CHARACTERS) {
+      if (CHAR.name == character) {
+        return idx;
+      } else {
+        idx++;
+      }
+    }
+
+    return -1;
   }
 
   // Convert the input image to something we can run the classifier on. Using HSV as I suspect it
@@ -37,24 +53,6 @@ public:
 
     return copy;
   }
-
-  static vector<string> characters;
 };
-
-vector<string> Classifier::characters = {
-  "cfalcon",
-  "dk",
-  "fox",
-  "jigglypuff",
-  "kirby",
-  "link",
-  "luigi",
-  "mario",
-  "ness",
-  "pikachu",
-  "samus",
-  "yoshi"
-};
-
 
 #endif /* classifier_h */
