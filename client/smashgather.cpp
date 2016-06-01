@@ -23,7 +23,7 @@ int loop() {
     // Run detection on current screen
     auto screen = CaptureScreenshot();
     bool is_win = false, is_winner_detected = false;
-    CharacterDetails winner("n/a", "");
+    CharacterDetails winner("n/a");
     is_win = DetectWin(screen, is_winner_detected, winner);
 
     // Run state machine
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
     // Analyze input image
     Mat input = imread(argv[2]);
     bool is_win = false, is_winner_detected = false;
-    CharacterDetails winner("n/a", "");
+    CharacterDetails winner("n/a");
 
     is_win = DetectWin(input, is_winner_detected, winner);
 

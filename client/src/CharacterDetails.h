@@ -5,22 +5,22 @@
 
 class CharacterDetails {
 public:
-  CharacterDetails(std::string _name, std::string _template_filename): name(_name), template_filename(_template_filename) {}
+  CharacterDetails(std::string _name): name(_name) {}
   std::string name;
-  std::string template_filename;
 };
 
-static const CharacterDetails FALCON("Falcon", "img/templates/cfalcon_template.jpg");
-static const CharacterDetails DK("DK", "img/templates/dk_template.jpg");
-static const CharacterDetails FOX("Fox", "img/templates/fox_template.jpg");
-static const CharacterDetails JIGGLYPUFF("Jigglypuff", "img/templates/jigglypuff_template.jpg");
-static const CharacterDetails KIRBY("Kirby", "img/templates/kirby_template.jpg");
-static const CharacterDetails LINK("Link", "img/templates/link_template.jpg");
-static const CharacterDetails MARIO("Mario", "img/templates/mario_template.jpg");
-static const CharacterDetails NESS("Ness", "img/templates/ness_template.jpg");
-static const CharacterDetails PIKACHU("Pikachu", "img/templates/pikachu_template.jpg");
-static const CharacterDetails SAMUS("Samus", "img/templates/samus_template.jpg");
-static const CharacterDetails YOSHI("Yoshi", "img/templates/yoshi_template.jpg");
+static const CharacterDetails FALCON("Falcon");
+static const CharacterDetails DK("DK");
+static const CharacterDetails FOX("Fox");
+static const CharacterDetails JIGGLYPUFF("Jigglypuff");
+static const CharacterDetails KIRBY("Kirby");
+static const CharacterDetails LINK("Link");
+static const CharacterDetails LUIGI("Luigi");
+static const CharacterDetails MARIO("Mario");
+static const CharacterDetails NESS("Ness");
+static const CharacterDetails PIKACHU("Pikachu");
+static const CharacterDetails SAMUS("Samus");
+static const CharacterDetails YOSHI("Yoshi");
 static const CharacterDetails CHARACTERS[] = {
   FALCON,
   DK,
@@ -28,6 +28,7 @@ static const CharacterDetails CHARACTERS[] = {
   JIGGLYPUFF,
   KIRBY,
   LINK,
+  LUIGI,
   MARIO,
   NESS,
   PIKACHU,
