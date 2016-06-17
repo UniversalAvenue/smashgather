@@ -106,3 +106,18 @@ bool DetectWin(cv::Mat& screen, bool& is_winner_detected, CharacterDetails& winn
   }
   return is_win;
 }
+
+// Detect winners and return a list of characters corresponding to their placement.
+// Return empty if no winner was detected.
+vector<CharacterDetails> DetectWins(cv::Mat& screen) {
+  Mat resized;
+
+  try {
+    // Trim the black contour and resize the input
+    TrimBlackContour(screen, resized);
+  } catch (...) {
+    return {};
+  }
+
+  return ExtractWinners(resized);
+}

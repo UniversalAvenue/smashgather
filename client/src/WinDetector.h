@@ -10,6 +10,7 @@ bool IsWinScreen(cv::Mat& screen);
 
 bool ExtractWinner(cv::Mat& win_screen, CharacterDetails& winner);
 std::vector<CharacterDetails> ExtractWinners(cv::Mat& win_screen);
+std::vector<CharacterDetails> DetectWins(cv::Mat& screen);
 
 bool DetectWin(cv::Mat& screen, bool& is_winner_detected, CharacterDetails& winner);
 

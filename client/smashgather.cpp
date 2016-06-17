@@ -110,20 +110,18 @@ int main(int argc, char* argv[]) {
   } else if (argc == 3 && strcmp(argv[1], "-i") == 0) {
     // Analyze input image
     Mat input = imread(argv[2]);
-    bool is_win = false, is_winner_detected = false;
-    CharacterDetails winner("n/a");
+    auto players = DetectWins(input);
 
-    is_win = DetectWin(input, is_winner_detected, winner);
-
-    if (is_win && is_winner_detected) {
-      cout << "Winner: " << winner.name << endl;
-      return 0;
-    } else if (is_win) {
-      cout << "Detected win, but could not identify winner!" << endl;
-      return 0;
+    if (players.size() > 0) {
+      for (auto it = players.begin(); it != players.end(); ++it) {
+        if (it != players.begin()) {
+          cout << ", ";
+        }
+        cout << it->name;
+      }
+      cout << endl;
     } else {
-      cout << "Did not detect a win!" << endl;
-      return 1;
+      cout << "NO_WINNER\n";
     }
   } else {
     cout << "Monitors screen output to detect SSB64 win screens, and records winner to the Smashgather server." << endl;
