@@ -2,6 +2,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+#include <algorithm>
 #include "src/WinDetector.h"
 #include "src/ContainsTemplate.h"
 #include "src/Util.h"
@@ -19,11 +20,23 @@ int main(int argc, char* argv[]) {
   for (string filename: filenames) {
     try {
       Mat input = imread(filename);
-      bool is_win = false, is_winner_detected = false;
-      CharacterDetails winner("n/a");
+      auto players = DetectWins(input);
 
-      is_win = DetectWin(input, is_winner_detected, winner);
-      cout << filename << ": " << is_win << ", " << is_winner_detected << ", " << winner.name << endl;
+      if (players.size() > 0) {
+        vector<string> names;
+        names.resize(players.size());
+
+        transform(players.begin(), players.end(), names.begin(),
+          [](CharacterDetails &player){
+            return player.name;
+          });
+
+        cout << filename << ": ";
+        copy(names.begin(), names.end(), ostream_iterator<string>(cout, " "));
+        cout << endl;
+      } else {
+        cout << filename << ": NO_WINNER_DETECTED\n";
+      }
     } catch (const exception &e) {
       cout << filename << ": " << e.what() << endl;
     }
