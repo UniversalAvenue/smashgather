@@ -1,7 +1,4 @@
-#ifndef util_h
-#define util_h
-
-#include "glob.h"
+#include "Util.h"
 
 using namespace std;
 
@@ -19,5 +16,3 @@ vector<string> glob(const string& pattern){
 string basename(const string& path) {
   return path.substr(path.find_last_of("/\\") + 1);
 }
-
-#endif /* util_h */

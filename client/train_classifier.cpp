@@ -7,7 +7,7 @@
 #include <algorithm>
 
 #include "src/Classifier.hpp"
-#include "src/Util.hpp"
+#include "src/Util.h"
 
 using namespace std;
 using namespace cv;

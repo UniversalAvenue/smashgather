@@ -8,7 +8,7 @@
 #include "CharacterDetails.h"
 #include "ContainsTemplate.h"
 #include "WinDetector.h"
-#include "Util.hpp"
+#include "Util.h"
 
 using namespace std;
 using namespace cv;
