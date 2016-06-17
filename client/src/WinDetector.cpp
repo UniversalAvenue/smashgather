@@ -34,8 +34,7 @@ vector<CharacterDetails> ExtractWinners(cv::Mat& screen) {
     Rect pos;
   };
 
-  // Create a vector of places
-  vector<Place> places;
+  vector<Place> positions;
 
   // Convert to grayscale first
   Mat gray;
@@ -43,35 +42,40 @@ vector<CharacterDetails> ExtractWinners(cv::Mat& screen) {
 
   // Fill it with matched locations of the place templates
   int place_num = 1;
+
   for (auto &place_template : glob("img/templates/*_place.png")) {
     Mat templ;
     cvtColor(imread(place_template), templ, COLOR_BGR2GRAY);
     auto pos = ContainsTemplatePos(gray, templ);
 
     if (pos.area() == 0) {
-      cerr << "Template " << place_template << " did not match anything in the win screen\n";
-      return result;
+      if (place_num == 1 || place_num == 2) {
+        // If we didn't find the first / second place template, this is not a valid win screen
+        return result;
+      }
+
+      continue;
     }
 
-    places.push_back({nullptr, place_num++, pos});
+    positions.push_back({nullptr, place_num++, pos});
   }
 
-  // Now sort it by the X coord of the position
-  sort(places.begin(), places.end(), [](Place a, Place b){ return a.pos.x < b.pos.x; });
+  // Sort the positions by their X coordinate to match with the character icons
+  sort(positions.begin(), positions.end(), [](Place a, Place b){ return a.pos.x < b.pos.x; });
 
   Classifier classifier("multi-class.svm");
 
-  // Add the characters to their corresponding places
-  auto place = places.begin();
-  for (auto &icon : ExtractCharacterIcons(screen)) {
+  // Add the characters to their corresponding positions
+  auto place = positions.begin();
+  for (auto &icon : ExtractCharacterIcons(screen, positions.size())) {
     place->character = &classifier.classify(icon);
     ++place;
   }
 
   // Finally, sort by the original place_num to get the final order
-  sort(places.begin(), places.end(), [](Place a, Place b){ return a.place < b.place; });
+  sort(positions.begin(), positions.end(), [](Place a, Place b){ return a.place < b.place; });
 
-  for (auto &place : places) {
+  for (auto &place : positions) {
     result.push_back(*(place.character));
   }
 

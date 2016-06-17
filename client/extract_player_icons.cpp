@@ -37,7 +37,8 @@ int main(int argc, char* argv[]) {
       continue;
     }
 
-    for(auto &pos : CharacterIconPositions) {
+    // Assume all are 4 player games
+    for(auto &pos : CharacterIconPositions.at(4)) {
       imwrite(randomFilename(), screenshot(pos));
     }
   }

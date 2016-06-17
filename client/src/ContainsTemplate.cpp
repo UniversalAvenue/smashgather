@@ -139,10 +139,10 @@ bool ContainsTemplate(Mat& input, Mat& templ, double threshold) {
 }
 
 // Get the character icons from a screenshot
-vector<cv::Mat> ExtractCharacterIcons(cv::Mat &input) {
+vector<cv::Mat> ExtractCharacterIcons(cv::Mat &input, int player_count) {
   vector<cv::Mat> icons;
 
-  for(auto &pos : CharacterIconPositions) {
+  for(auto &pos : CharacterIconPositions.at(player_count)) {
     icons.push_back(input(pos));
   }
 
