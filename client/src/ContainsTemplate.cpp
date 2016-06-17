@@ -87,7 +87,11 @@ void TrimBlackContour(Mat& input, Mat& resized) {
 
   // Aspect ratio of the image should be 1.36 or 1.37 (with glitches). If it's not, throw an error.
   int ratio = round((double) roi.width / roi.height * 100);
-  if (!(ratio == 136 || ratio == 137)) {
+
+  // Except if the ratio is 134. It's likely a screenshoot containg the emulator toolbar.
+  if (ratio == 134) {
+    roi.height = roi.width / 1.3636363636; // Trim the bottom
+  } else if(!(ratio == 136 || ratio == 137)) {
     throw InvalidScreenshot();
   }
 

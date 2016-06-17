@@ -29,7 +29,13 @@ int main(int argc, char* argv[]) {
     auto contents = imread(filename);
 
     Mat screenshot;
-    TrimBlackContour(contents, screenshot);
+
+    try {
+      TrimBlackContour(contents, screenshot);
+    } catch (const exception &e) {
+      cout << filename << ": " << e.what() << endl;
+      continue;
+    }
 
     for(auto &pos : CharacterIconPositions) {
       imwrite(randomFilename(), screenshot(pos));
