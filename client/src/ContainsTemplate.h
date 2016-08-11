@@ -17,7 +17,7 @@ const std::vector<cv::Rect> CharacterIconPositions = {
 
 void TrimBlackContour(cv::Mat&, cv::Mat&);
 
-bool ContainsTemplate(cv::Mat&, cv::Mat&, double threshold = MSSIM_THRESHOLD);
+cv::Rect ContainsTemplate(cv::Mat&, cv::Mat&, double threshold = MSSIM_THRESHOLD);
 cv::Rect ContainsTemplatePos(cv::Mat&, cv::Mat&, double threshold = MSSIM_THRESHOLD);
 
 std::vector<cv::Mat> ExtractCharacterIcons(cv::Mat &);

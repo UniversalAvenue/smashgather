@@ -13,7 +13,7 @@
 using namespace std;
 using namespace cv;
 
-bool IsWinScreen(Mat& screen) {
+cv::Rect IsWinScreen(Mat& screen) {
 
   // Convert to grayscale first
   Mat gray;
@@ -93,16 +93,17 @@ bool DetectWin(cv::Mat& screen, bool& is_winner_detected, CharacterDetails& winn
   bool is_win = false;
   is_winner_detected = false;
 
-  try {
-    // Trim the black contour and resize the input
-    TrimBlackContour(screen, resized);
-  } catch (...) {
-    return false;
-  }
+  // try {
+  //   // Trim the black contour and resize the input
+  //   TrimBlackContour(screen, resized);
+  // } catch (...) {
+  //   return false;
+  // }
 
-  is_win = IsWinScreen(resized);
-  if (is_win) {
-    is_winner_detected = ExtractWinner(resized, winner);
-  }
+  is_win = IsWinScreen(screen).area() > 0;
+  cout << IsWinScreen(screen) << endl;
+  // if (is_win) {
+  //   is_winner_detected = ExtractWinner(screen, winner);
+  // }
   return is_win;
 }
